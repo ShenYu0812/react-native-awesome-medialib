@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply plugin: 'kotlin-android'
 
 import com.android.build.OutputFile
 
@@ -128,11 +129,14 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.example.reactnativeawesomemedialib"
+        applicationId "com.project5e.example.pictureselector"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+    }
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
     }
     splits {
         abi {
@@ -184,7 +188,7 @@ dependencies {
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
 
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'
     }
@@ -204,7 +208,7 @@ dependencies {
         implementation jscFlavor
     }
 
-    implementation project(':reactnativeawesomemedialib')
+    implementation project(':react-native-awesome-medialib')
 }
 
 // Run this once to be able to run the application with BUCK
