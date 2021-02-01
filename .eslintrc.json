@@ -1,12 +1,7 @@
 {
-    "env": {
-        "browser": true,
-        "es2021": true
-    },
     "extends": [
-        "eslint:recommended",
-        "plugin:react/recommended",
-        "plugin:@typescript-eslint/recommended"
+        "@react-native-community",
+        "5e"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
@@ -21,5 +16,11 @@
         "@typescript-eslint"
     ],
     "rules": {
+        "no-shadow": "off",
+        "@typescript-eslint/no-shadow": ["error"],
+        "react-native/no-inline-styles": 0,
+        "@typescript-eslint/no-require-imports": 1,
+        "camelcase": 0,
+        "@typescript-eslint/naming-convention": 0
     }
 }

@@ -23,5 +23,8 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "esnext"
-  }
+  },
+  "exclude": [
+    "node_modules", "./example/metro.config.js", "./example/babel.config.js", "./lib/*"
+  ]
 }
