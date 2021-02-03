@@ -22,6 +22,6 @@ class MediaLibPackage : ReactPackage {
     mutableListOf<ViewManager<out View, out ReactShadowNode<*>>>().also {
 //        it.add(CameraViewManager())
       it.add(MediaLibraryViewManager(reactContext))
-      it.add(MediaLibraryPhotoPreviewManager(reactContext))
+      it.add(MediaLibraryPhotoPreviewManager())
     }
 }

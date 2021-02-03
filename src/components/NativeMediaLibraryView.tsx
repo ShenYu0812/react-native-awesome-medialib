@@ -1,5 +1,5 @@
-import {requireNativeComponent, ViewStyle} from 'react-native'
 import React from 'react'
+import {requireNativeComponent, ViewStyle} from 'react-native'
 
 const MediaLibraryView = requireNativeComponent('MediaLibraryView') as any
 
@@ -24,7 +24,7 @@ export interface MediaLibraryViewProps {
   onAlbumUpdate(e: any): void
 }
 
-const MediaLibrary = (props: MediaLibraryViewProps) => {
+export const MediaLibrary = (props: MediaLibraryViewProps) => {
   return (
     <MediaLibraryView
       maxSelectedMediaCount={props.maxSelectedMediaCount}
@@ -37,5 +37,3 @@ const MediaLibrary = (props: MediaLibraryViewProps) => {
     />
   )
 }
-
-export {MediaLibrary}

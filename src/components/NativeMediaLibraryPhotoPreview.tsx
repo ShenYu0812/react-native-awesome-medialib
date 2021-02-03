@@ -1,5 +1,5 @@
-import {requireNativeComponent, ViewStyle} from 'react-native'
 import React from 'react'
+import {requireNativeComponent, ViewStyle} from 'react-native'
 
 const MediaLibraryPhotoPreviewView = requireNativeComponent('MediaLibraryPhotoPreview') as any
 

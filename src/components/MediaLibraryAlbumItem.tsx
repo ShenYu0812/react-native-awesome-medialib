@@ -1,6 +1,6 @@
 import React from 'react'
 import {StyleSheet, TouchableOpacity, View, Text, Image} from 'react-native'
-import {black1A, white, grayB2} from './uitls/Color'
+import {black1A, white, grayB2} from '../uitls/Colors'
 
 interface Props {
   albumName: string

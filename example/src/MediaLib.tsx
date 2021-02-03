@@ -1,6 +1,15 @@
 import React, {useState, useEffect} from 'react'
-import {View, StyleSheet, Platform, PermissionsAndroid, StatusBar, FlatList} from 'react-native'
-import {black1A, white, black} from './uitls/Color'
+import {
+  View,
+  StyleSheet,
+  Platform,
+  PermissionsAndroid,
+  StatusBar,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  Text,
+} from 'react-native'
 import {
   MediaLibrary,
   fetchAllAssets,
@@ -14,17 +23,40 @@ import {
   MediaLibraryBottomToolBar,
   MediaLibraryAlbumItem,
 } from 'react-native-awesome-medialib'
-import {AlbumModel, processAlbumModel} from './models'
-import {requestSinglePermission} from './global/PermissionChecker'
-import ProgressHUD from './ProgressHUD'
 import {isIphoneX} from 'react-native-iphone-x-helper'
-import {albumListStyle, showToast} from './uitls/Utils'
 import {RootSiblingParent} from 'react-native-root-siblings'
+import type {BaseProps} from './common/BaseProps'
+import {AlbumModel, processAlbumModel} from './models'
+import {black1A, white, black} from './common/Colors'
+import {albumListStyle, showToast} from './uitls/Utils'
+import {requestSinglePermission} from './uitls/PermissionChecker'
+import ThreeStageNavigationBar from './components/ThreeStageNavigationBar'
+import ProgressHUD from './components/ProgressHUD'
+import DismissButton from './images/dismiss_white_button.png'
+import DownArrow from './images/down_white_arrow.png'
 
-const MediaLibraryPage = () => {
+export enum SourceType {
+  main = 'main',
+  editor = 'editor',
+  avatar = 'avatar',
+}
+
+export interface Props extends BaseProps<any> {
+  // 最大选择数量
+  maxSelectedMediaCount?: number
+  // 是否只展示视频
+  isVideoOnly?: boolean
+  // 从哪里调用
+  from: SourceType
+}
+
+const MediaLibraryPage = (props: Props) => {
+  const navigation = props.navigation
+  const [maxSelectedMediaCount] = useState<number>(props.maxSelectedMediaCount ?? 9)
+  const [isVideoOnly] = useState<boolean>(props.isVideoOnly ?? false)
   const [selectedMediaCount, setSelectedMediaCount] = useState<number>(0)
   const [showProgressHUD, setShowProgressHUD] = useState<boolean>(false)
-  const [, setCurrentAlbum] = useState<AlbumModel>()
+  const [currentAlbum, setCurrentAlbum] = useState<AlbumModel>()
   const [albumListVisable, setAlbumListVisable] = useState<boolean>(false)
   const [albumDataModel, setAlbumDataModel] = useState<AlbumModel[]>([])
 
@@ -32,7 +64,10 @@ const MediaLibraryPage = () => {
     if (Platform.OS === 'ios') {
       const libraryAuthGranted = await requestLibraryAuthorization()
       if (libraryAuthGranted) fetchMediaResource()
-
+      if (!isVideoOnly) {
+        const cameraAuthGranted = await requestCameraAuthorization()
+        if (cameraAuthGranted) startCameraPreview()
+      }
       const cameraAuthGranted = await requestCameraAuthorization()
       if (cameraAuthGranted) startCameraPreview()
     } else {
@@ -56,7 +91,7 @@ const MediaLibraryPage = () => {
   }
 
   const fetchMediaResource = async () => {
-    fetchAllAssets(false)
+    fetchAllAssets(isVideoOnly)
     const res = await fetchAllAlbums()
     if (res && res.length > 0) {
       const models = processAlbumModel(res)
@@ -74,7 +109,7 @@ const MediaLibraryPage = () => {
   }, [])
 
   const bottomToolBar = () => {
-    return albumListVisable ? null : (
+    return isVideoOnly || albumListVisable ? null : (
       <MediaLibraryBottomToolBar
         onDoneButtonPress={onFinishSelect}
         selectedMediaCount={selectedMediaCount}
@@ -95,11 +130,55 @@ const MediaLibraryPage = () => {
     )
   }
 
+  const showAlbumList = async () => {
+    if (albumListVisable) {
+      setAlbumListVisable(false)
+      return
+    }
+
+    if (albumDataModel.length > 0) {
+      setAlbumListVisable(true)
+      return
+    }
+    setShowProgressHUD(true)
+    try {
+      const res = await fetchAllAlbums()
+      if (res && res.length > 0) {
+        const models = processAlbumModel(res)
+        setAlbumDataModel(models)
+        setShowProgressHUD(false)
+        setAlbumListVisable(true)
+      }
+    } catch (error) {
+      setShowProgressHUD(false)
+    }
+  }
+
   const onSelectAlbum = (item: AlbumModel) => {
     onSelectAlbumAtIndex(item.index)
     setAlbumListVisable(false)
     setCurrentAlbum(item)
   }
+
+  const navigationLeft = () => (
+    <View style={styles.navigationBarLeftItem}>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+        <Image source={DismissButton} />
+      </TouchableOpacity>
+    </View>
+  )
+
+  const navigationMiddle = () => (
+    <View>
+      <TouchableOpacity
+        activeOpacity={1}
+        onPress={() => showAlbumList()}
+        style={{flexDirection: 'row', alignItems: 'center'}}>
+        <Text style={{fontSize: 16, fontWeight: '600', color: white}}>{currentAlbum?.name}</Text>
+        {currentAlbum ? <Image source={DownArrow} /> : null}
+      </TouchableOpacity>
+    </View>
+  )
 
   const onFinishSelect = async () => {
     setShowProgressHUD(true)
@@ -165,8 +244,13 @@ const MediaLibraryPage = () => {
     <RootSiblingParent>
       <StatusBar backgroundColor={black} barStyle="light-content" />
       <View style={styles.container}>
+        <ThreeStageNavigationBar
+          leftItem={() => navigationLeft()}
+          middleItem={() => navigationMiddle()}
+          style={{backgroundColor: black1A}}
+        />
         <MediaLibrary
-          maxSelectedMediaCount={9}
+          maxSelectedMediaCount={maxSelectedMediaCount}
           onAlbumUpdate={onAlbumUpdate}
           onMediaItemSelect={onMediaItemSelect}
           onPushCameraPage={onPushCameraPage}
@@ -197,4 +281,5 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: black1A,
   },
+  navigationBarLeftItem: {marginLeft: 16},
 })

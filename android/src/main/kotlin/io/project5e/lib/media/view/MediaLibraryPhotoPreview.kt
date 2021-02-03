@@ -1,13 +1,10 @@
 package io.project5e.lib.media.view
 
-import android.view.Choreographer
 import android.view.View
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager.widget.ViewPager
 import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ThemedReactContext
 import io.project5e.lib.media.R
 import io.project5e.lib.media.model.GalleryViewModel
@@ -22,9 +19,9 @@ import java.lang.ref.WeakReference
 
 @Suppress("ViewConstructor", "COMPATIBILITY_WARNING")
 class MediaLibraryPhotoPreview constructor(
-  themedReactContext: ThemedReactContext,
-  private val reactApplicationContext: ReactApplicationContext
-) : ConstraintLayout(themedReactContext), LifecycleOwner, ViewPager.OnPageChangeListener {
+  themedReactContext: ThemedReactContext
+) : BaseComponentView(themedReactContext), LifecycleOwner, ViewPager.OnPageChangeListener,
+  SelectedAdapter.OnItemClickListener {
 
   private var registry: LifecycleRegistry =
     LifecycleRegistry(this@MediaLibraryPhotoPreview)
@@ -40,7 +37,6 @@ class MediaLibraryPhotoPreview constructor(
   private var currentPosition: Int = 0
 
   init {
-    setupLayoutHack()
     registry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
     val ownerWr = WeakReference(themedReactContext.currentActivity as? ViewModelStoreOwner)
     model = ownerWr.get()?.let { ViewModelProviders.of(it).get(GalleryViewModel::class.java) }
@@ -55,21 +51,14 @@ class MediaLibraryPhotoPreview constructor(
 
     model?.let { m ->
       previewAdapter.updateData(m.shouldShowList.value)
-      m.onClickPotion.observe(this@MediaLibraryPhotoPreview) {
-        registry.handleLifecycleEvent(Lifecycle.Event.ON_START)
-        currentPosition = if (m.shouldShowList.value?.size == null
-          || it == null || it < 0 || it > m.shouldShowList.value?.size!!
-        ) 0 else {
-          highlightSelectedItem(it)
-          markSelectedState(it)
-          it
-        }
-        vp_preview.currentItem = currentPosition
-      }
+      currentPosition = m.previewPosition ?: 0
+      vp_preview.currentItem = currentPosition
+      registry.handleLifecycleEvent(Lifecycle.Event.ON_START)
 
       m.selectedList.observe(this@MediaLibraryPhotoPreview) { list ->
         list?.let {
           tv_selected_num.text = context.getString(R.string.select_num, it.size)
+          highlightSelectedItem(currentPosition)
           markSelectedState(currentPosition)
           rvAdapter.updateData(it)
         }
@@ -84,36 +73,10 @@ class MediaLibraryPhotoPreview constructor(
 
   override fun onDetachedFromWindow() {
     super.onDetachedFromWindow()
-    if (frameCallback != null) Choreographer.getInstance().removeFrameCallback(frameCallback)
     registry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
   }
 
   override fun getLifecycle(): Lifecycle = registry
-
-  private var frameCallback: Choreographer.FrameCallback? = null
-  private fun setupLayoutHack() {
-    frameCallback = object : Choreographer.FrameCallback {
-      override fun doFrame(frameTimeNanos: Long) {
-        manuallyLayoutChildren()
-        if (!reactApplicationContext.hasActiveCatalystInstance()) return
-        viewTreeObserver.dispatchOnGlobalLayout()
-        Choreographer.getInstance().postFrameCallback(frameCallback)
-      }
-    }
-    Choreographer.getInstance().postFrameCallback(frameCallback)
-  }
-
-  private fun manuallyLayoutChildren() {
-    for (i in 0 until childCount) {
-      val child = getChildAt(i)
-      child ?: continue
-      child.measure(
-        MeasureSpec.makeMeasureSpec(measuredWidth, MeasureSpec.EXACTLY),
-        MeasureSpec.makeMeasureSpec(measuredHeight, MeasureSpec.EXACTLY)
-      )
-      child.layout(0, 0, child.measuredWidth, child.measuredHeight)
-    }
-  }
 
   override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
   }
@@ -175,5 +138,19 @@ class MediaLibraryPhotoPreview constructor(
 
   override fun onPageScrollStateChanged(state: Int) {
   }
+
+  override fun onClick(position: Int) {
+    rvAdapter.setPreviewPosition(position)
+    rv_selected.smoothScrollToPosition(position)
+    model ?: return
+    val selectItem = model.selectedList.value?.get(position)
+    selectItem ?: return
+    val index = model.shouldShowList.value?.indexOf(selectItem)
+    val size = model.shouldShowList.value?.size
+    size ?: return
+    if (index == null || index < 0 || index > size) return
+    vp_preview.currentItem = index
+  }
+
 
 }

@@ -1,7 +1,7 @@
 import {StyleSheet} from 'react-native'
 import {isIphoneX} from 'react-native-iphone-x-helper'
 import Toast from 'react-native-root-toast'
-import {black444, black1A} from './Color'
+import {black444, black1A} from '../common/Colors'
 
 export function showToast(title: string, position = 120) {
   Toast.show(title, {

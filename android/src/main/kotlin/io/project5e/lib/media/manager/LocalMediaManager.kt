@@ -197,8 +197,8 @@ class LocalMediaManager private constructor() {
 
   private fun getOrder(pageNum: Int?, pageSize: Int?): String {
     val pageParam = if (pageNum == null || pageSize == null) ""
-    else "LIMIT $pageSize OFFSET ${(pageNum - 1) * pageSize}"
-    return "$DATE_MODIFIED DESC $pageParam"
+    else "limit $pageSize offset ${(pageNum - 1) * pageSize}"
+    return "$DATE_MODIFIED desc $pageParam"
   }
 
   suspend fun getAllAlbum(

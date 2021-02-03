@@ -1,6 +1,9 @@
 package io.project5e.lib.media.adapter
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,7 +11,11 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.facebook.react.bridge.Arguments
 import io.project5e.lib.media.model.LocalMedia
 import io.project5e.lib.media.R
@@ -27,8 +34,7 @@ private const val toastDurationInvalidate = 2
 
 @Suppress("SimpleDateFormat")
 class GalleryAdapter(
-  private val context: Context,
-  private val gapDimension: Int = 0
+  private val context: Context
 ) : MediaLibBaseAdapter<GalleryAdapter.GalleryViewHolder>() {
   var selectLimit = 9
   private val durationInvalidate = context.resources.getString(R.string.duration_invalidate)
@@ -39,7 +45,7 @@ class GalleryAdapter(
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GalleryViewHolder {
     val view = LayoutInflater.from(parent.context)
       .inflate(R.layout.item_gallery, parent, false)
-    return GalleryViewHolder(view)
+    return GalleryViewHolder(view, deviceWidth)
   }
 
   override fun bindNormal(vh: GalleryViewHolder, position: Int) {
@@ -73,31 +79,23 @@ class GalleryAdapter(
     vh.ivPhoto.visibility = if (!haveHeader) View.VISIBLE else View.GONE
     vh.cbSelect.visibility = View.GONE
     vh.container.setOnClickListener { emitter?.receiveEvent(id, ON_PUSH_CAMERA, null) }
-    layoutItem(vh)
   }
 
   private fun localImage(vh: GalleryViewHolder, position: Int) {
-    layoutItem(vh)
     val t = dataList[position].duration
     val timestamp = if (t != null) SimpleDateFormat("mm:ss").format(t) else null
     vh.tvDuration.visibility = if (timestamp != null) View.VISIBLE else View.GONE
     vh.tvDuration.text = timestamp
 
-    val overrideSize = (deviceWidth - gapDimension * 4) / 3
     Glide.with(vh.ivPhoto.context)
       .asBitmap()
       .skipMemoryCache(false)
-      .diskCacheStrategy(DiskCacheStrategy.ALL)
-      .placeholder(R.drawable.picture_media_item_placeholder)
-      .error(R.drawable.picture_media_item_placeholder)
+      .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+      .placeholder(R.drawable.pic_gallery_placeholder)
+      .listener(SimpleRequestListener(vh.ivPhoto.context, dataList[position].uri))
+      .error(R.drawable.pic_gallery_placeholder)
       .load(dataList[position].srcPath)
-      .override(overrideSize, overrideSize)
       .into(vh.ivPhoto)
-  }
-
-  private fun layoutItem(vh: GalleryViewHolder) {
-    val side = deviceWidth / 3
-    vh.container.layoutParams = ViewGroup.LayoutParams(side, side)
   }
 
   private fun modifyState(vh: GalleryViewHolder, position: Int) {
@@ -135,7 +133,8 @@ class GalleryAdapter(
   }
 
   class GalleryViewHolder(
-    itemView: View
+    itemView: View,
+    private val deviceWidth: Int
   ) : BaseViewHolder(itemView) {
 
     val container: ViewGroup = itemView.findViewById(R.id.photo_container)
@@ -148,6 +147,12 @@ class GalleryAdapter(
 
     init {
       ivCamera.visibility = View.GONE
+      layoutItem()
+    }
+
+    private fun layoutItem() {
+      val side = deviceWidth / 3
+      container.layoutParams = ViewGroup.LayoutParams(side, side)
     }
   }
 

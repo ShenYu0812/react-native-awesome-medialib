@@ -34,7 +34,7 @@ class GalleryViewModel : ViewModel() {
     list?.filter { it.checked }?.sortedBy { it.order }
   }
   var changeAlbum: MutableLiveData<Boolean> = MutableLiveData(false)
-  var onClickPotion: MutableLiveData<Int> = MutableLiveData()
+  var previewPosition: Int? = null
 
   var preloadPageNum = 1
   private var mediaType: Int? = null
@@ -161,7 +161,7 @@ class GalleryViewModel : ViewModel() {
     shouldShowList.value = null
     currentBucketId.value = null
     changeAlbum.value = null
-    onClickPotion.value = null
+    previewPosition = null
     notifyGalleryUpdate.value = null
     selectLimit.value = null
     currentUpdateType = null
@@ -207,7 +207,7 @@ class GalleryViewModel : ViewModel() {
     }
 
   fun previewVideo(promise: Promise) = uiScope.launch {
-    onClickPotion.value?.let { p ->
+    previewPosition?.let { p ->
       shouldShowList.value?.let {
         if (p < 0 || p >= it.size) promise.reject("index out of bounds!")
         promise.resolve(it[p].toMapVideoPreview())

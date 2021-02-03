@@ -30,10 +30,13 @@ class SelectedAdapter(
       .asBitmap()
       .skipMemoryCache(false)
       .diskCacheStrategy(DiskCacheStrategy.ALL)
-      .placeholder(R.drawable.picture_media_item_placeholder)
+      .placeholder(R.drawable.pic_gallery_placeholder)
+      .listener(SimpleRequestListener(vh.ivPhoto.context, dataList[position].uri))
+      .error(R.drawable.pic_gallery_placeholder)
       .load(dataList[position].srcPath)
       .override(sizeDimensions, sizeDimensions)
       .into(vh.ivPhoto)
+    vh.container.setOnClickListener { itemClickListener?.onClick(position) }
   }
 
   fun setPreviewPosition(pos: Int?) {
@@ -45,6 +48,12 @@ class SelectedAdapter(
     val container: ViewGroup = itemView.findViewById(R.id.photo_container)
     val ivPhoto: ImageView = itemView.findViewById(R.id.iv_item)
     val vMask: View = itemView.findViewById(R.id.v_mask)
+  }
+
+  var itemClickListener: OnItemClickListener? = null
+
+  interface OnItemClickListener {
+    fun onClick(position: Int)
   }
 
 }

@@ -34,11 +34,11 @@ class MediaLibraryViewManager(
   override fun createViewInstance(reactContext: ThemedReactContext): NativeMediaLibraryView =
     NativeMediaLibraryView(reactContext, applicationContext)
 
-//  @ReactProp(name = "maxSelectedMediaCount")
-//  fun setMaxSelectedCount(v: NativeMediaLibraryView, count: Int) {
-//    val model = getViewModel(applicationContext)
-//
-//  }
+  @ReactProp(name = "maxSelectedMediaCount")
+  fun setMaxSelectedCount(v: NativeMediaLibraryView, count: Int) {
+    val model = getViewModel(applicationContext)
+    model?.updateSelectLimit(count)
+  }
 
   override fun getExportedCustomBubblingEventTypeConstants(): MutableMap<String, *>? {
     return MapBuilder.builder<String, Any>()

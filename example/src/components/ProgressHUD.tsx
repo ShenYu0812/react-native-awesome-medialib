@@ -1,6 +1,6 @@
 import React from 'react'
 import {View, StyleSheet, ActivityIndicator} from 'react-native'
-import {black333} from './uitls/Color'
+import {black333} from '../common/Colors'
 
 export interface Props {
   color?: string

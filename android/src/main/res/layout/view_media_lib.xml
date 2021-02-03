@@ -3,24 +3,16 @@
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
-  android:background="@android:color/holo_blue_bright"
   android:layout_height="match_parent"
+  android:background="@color/color_1a1a1a"
   tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
-  <ImageView
-    android:layout_width="100dp"
-    android:layout_height="100dp"
-    android:background="@android:color/black"
-    android:src="@drawable/picture_icon_placeholder" />
-
-
-  <!--  <androidx.recyclerview.widget.RecyclerView-->
-  <!--    android:id="@+id/rv_gallery"-->
-  <!--    android:layout_width="match_parent"-->
-  <!--    android:layout_height="wrap_content"-->
-  <!--    android:paddingBottom="@dimen/dp_6"-->
-  <!--    android:visibility="visible"-->
-  <!--    app:layout_constraintTop_toTopOf="parent" />-->
-
+  <androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/rv_gallery"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/dp_6"
+    android:visibility="visible"
+    app:layout_constraintTop_toTopOf="parent" />
 
 </merge>

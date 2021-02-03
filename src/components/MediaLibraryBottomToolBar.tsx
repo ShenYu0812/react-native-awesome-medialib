@@ -1,7 +1,7 @@
-import {black1A, gray73, white} from './uitls/Color'
 import React from 'react'
 import {StyleSheet, TouchableOpacity, View, Text} from 'react-native'
 import {isIphoneX} from 'react-native-iphone-x-helper'
+import {black1A, gray73, white} from '../uitls/Colors'
 
 interface Props {
   selectedMediaCount: number
