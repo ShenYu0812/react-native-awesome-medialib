@@ -20,8 +20,8 @@
 
   <com.makeramen.roundedimageview.RoundedImageView
     android:id="@+id/iv_item"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="@dimen/dp_112"
+    android:layout_height="@dimen/dp_112"
     android:scaleType="centerCrop"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
@@ -54,25 +54,22 @@
 
   <ImageButton
     android:id="@+id/iv_select"
-    android:layout_width="@dimen/dp_33"
-    android:layout_height="@dimen/dp_33"
-    android:layout_marginTop="@dimen/dp_9"
-    android:layout_marginEnd="@dimen/dp_9"
+    android:layout_width="@dimen/dp_41"
+    android:layout_height="@dimen/dp_41"
     android:background="@android:color/transparent"
     android:contentDescription="@null"
     android:gravity="center"
-    android:padding="@dimen/dp_4"
+    android:padding="@dimen/dp_6"
     android:src="@drawable/ic_state_uncheck"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintTop_toTopOf="parent" />
 
   <TextView
     android:id="@+id/tv_selected_num"
-    android:layout_width="@dimen/dp_33"
-    android:layout_height="@dimen/dp_33"
-    android:layout_marginTop="@dimen/dp_9"
-    android:layout_marginEnd="@dimen/dp_9"
+    android:layout_width="@dimen/dp_41"
+    android:layout_height="@dimen/dp_41"
     android:gravity="center"
+    android:padding="@dimen/dp_6"
     android:text="@null"
     android:textColor="@color/color_1a1a1a"
     android:textSize="@dimen/dp_12"

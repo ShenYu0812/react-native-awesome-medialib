@@ -1,31 +1,20 @@
-import * as React from 'react';
+import React from 'react'
+import {createStackNavigator} from '@react-navigation/stack'
+import {NavigationContainer} from '@react-navigation/native'
+import MediaSelectorPage from './MediaSelector'
+import MediaLibraryPage from './MediaLib'
 
-import { StyleSheet, View, Text } from 'react-native';
-import AwesomeMedialib from 'react-native-awesome-medialib';
+const Stack = createStackNavigator()
 
-export default function App() {
-  const [result, setResult] = React.useState<number | undefined>();
-
-  React.useEffect(() => {
-    AwesomeMedialib.multiply(3, 7).then(setResult);
-  }, []);
-
+const App = () => {
   return (
-    <View style={styles.container}>
-      <Text>Result: {result}</Text>
-    </View>
-  );
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="MediaSelectorPage">
+        <Stack.Screen component={MediaSelectorPage} name="MediaSelector" />
+        <Stack.Screen component={MediaLibraryPage} name="MediaLib" options={{headerShown: false}} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  box: {
-    width: 60,
-    height: 60,
-    marginVertical: 20,
-  },
-});
+export default App

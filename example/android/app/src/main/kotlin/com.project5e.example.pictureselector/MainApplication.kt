@@ -4,9 +4,8 @@ import android.app.Application
 import android.content.Context
 import com.facebook.react.*
 import com.facebook.soloader.SoLoader
-import io.project5e.lib.picture.MediaLibPackage
-
-import java.lang.reflect.InvocationTargetException
+import io.project5e.lib.media.MediaLibPackage
+import io.project5e.lib.media.manager.LocalMediaManager
 
 
 class MainApplication : Application(), ReactApplication {
@@ -17,8 +16,6 @@ class MainApplication : Application(), ReactApplication {
 
     override fun getPackages(): List<ReactPackage> {
       val packages: MutableList<ReactPackage> = PackageList(this).packages
-      // Packages that cannot be autolinked yet can be added manually here, for PictureSelectorExample:
-      // packages.add(new MyReactNativePackage());
       packages.add(MediaLibPackage())
       return packages
     }
@@ -36,6 +33,7 @@ class MainApplication : Application(), ReactApplication {
     super.onCreate()
     SoLoader.init(this,  /* native exopackage */false)
     initializeFlipper(this, reactNativeHost.reactInstanceManager) // Remove this line if you don't want Flipper enabled
+    LocalMediaManager.initialization(this@MainApplication)
   }
 
   companion object {
@@ -51,17 +49,11 @@ class MainApplication : Application(), ReactApplication {
          We use reflection here to pick up the class that initializes Flipper,
         since Flipper library is not available in release mode
         */
-          val aClass = Class.forName("com.reactnativepictureselectorExample.ReactNativeFlipper")
+          val aClass = Class.forName("com.project5e.example.pictureselector.ReactNativeFlipper")
           aClass
             .getMethod("initializeFlipper", Context::class.java, ReactInstanceManager::class.java)
             .invoke(null, context, reactInstanceManager)
-        } catch (e: ClassNotFoundException) {
-          e.printStackTrace()
-        } catch (e: NoSuchMethodException) {
-          e.printStackTrace()
-        } catch (e: IllegalAccessException) {
-          e.printStackTrace()
-        } catch (e: InvocationTargetException) {
+        } catch (e: Exception) {
           e.printStackTrace()
         }
       }

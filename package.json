@@ -23,14 +23,14 @@
   ],
   "scripts": {
     "test": "jest",
-    "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "lint:staged": "lint-staged",
-    "lint:husky": "eslint --fix --ext .jsx,.js,.tsx,.ts",
+    "lint:husky": "eslint --fix --ext .jsx,.js,.tsx,.ts -f table --fix",
     "prepare": "bob build",
     "release": "release-it",
     "example": "yarn --cwd example",
     "pods": "cd example && pod-install --quiet",
-    "bootstrap": "yarn example && yarn && yarn pods"
+    "bootstrap": "yarn example && yarn"
   },
   "keywords": [
     "react-native",
@@ -123,5 +123,9 @@
         }
       ]
     ]
+  },
+  "dependencies": {
+    "add": "^2.0.6",
+    "react-native-iphone-x-helper": "^1.3.0"
   }
 }
