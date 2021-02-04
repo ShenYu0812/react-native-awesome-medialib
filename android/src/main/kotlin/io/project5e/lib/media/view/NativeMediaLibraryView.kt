@@ -20,6 +20,7 @@ import io.project5e.lib.media.model.UpdateType.*
 import io.project5e.lib.media.model.LocalMedia
 import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.ON_MEDIA_ITEM_SELECT
 import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.SELECT_MEDIA_COUNT
+import io.project5e.lib.media.utils.NavigationEmitter.receiveEvent
 import io.project5e.lib.media.utils.ViewModelProviders
 import kotlinx.android.synthetic.main.view_media_lib.view.*
 import java.lang.ref.WeakReference
@@ -64,7 +65,6 @@ class NativeMediaLibraryView constructor(
 
   private fun loadData() {
     model ?: return
-    rvAdapter.emitter = model.emitter
     model.shouldShowList.observe(this@NativeMediaLibraryView) { list ->
       if (list == null) return@observe
       requestLayoutAndMeasure()
@@ -128,7 +128,7 @@ class NativeMediaLibraryView constructor(
   private fun onItemSelected(selectedCount: Int) {
     val dataMap = Arguments.createMap()
     dataMap.putInt(SELECT_MEDIA_COUNT, selectedCount)
-    model?.emitter?.receiveEvent(id, ON_MEDIA_ITEM_SELECT, dataMap)
+    receiveEvent(id, ON_MEDIA_ITEM_SELECT, dataMap)
   }
 
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

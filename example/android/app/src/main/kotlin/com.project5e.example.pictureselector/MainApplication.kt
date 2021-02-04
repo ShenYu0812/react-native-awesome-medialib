@@ -6,6 +6,7 @@ import com.facebook.react.*
 import com.facebook.soloader.SoLoader
 import io.project5e.lib.media.MediaLibPackage
 import io.project5e.lib.media.manager.LocalMediaManager
+import io.project5e.lib.media.utils.NavigationEmitter
 
 
 class MainApplication : Application(), ReactApplication {
@@ -34,6 +35,7 @@ class MainApplication : Application(), ReactApplication {
     SoLoader.init(this,  /* native exopackage */false)
     initializeFlipper(this, reactNativeHost.reactInstanceManager) // Remove this line if you don't want Flipper enabled
     LocalMediaManager.initialization(this@MainApplication)
+    NavigationEmitter.initReactNativeHost(reactNativeHost)
   }
 
   companion object {

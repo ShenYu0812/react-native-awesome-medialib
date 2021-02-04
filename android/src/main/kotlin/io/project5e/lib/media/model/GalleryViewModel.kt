@@ -11,6 +11,7 @@ import io.project5e.lib.media.model.UpdateType.*
 import io.project5e.lib.media.react.EventEmitter
 import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.ON_ALBUM_UPDATE
 import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.newAlbums
+import io.project5e.lib.media.utils.NavigationEmitter.receiveEvent
 import kotlinx.coroutines.*
 
 private const val photoSelectLimit = 9
@@ -38,8 +39,6 @@ class GalleryViewModel : ViewModel() {
 
   var preloadPageNum = 1
   private var mediaType: Int? = null
-
-  var emitter: EventEmitter? = null
 
   init {
     shouldShowList.postValue(mutableListOf())
@@ -186,7 +185,7 @@ class GalleryViewModel : ViewModel() {
   fun updateAlbum(id: Int? = null) = uiScope.launch {
     id ?: return@launch
     val bundle = Arguments.createMap().also { it.putArray(newAlbums, fetchAlbum()) }
-    emitter?.receiveEvent(id, ON_ALBUM_UPDATE, bundle)
+    receiveEvent(id, ON_ALBUM_UPDATE, bundle)
   }
 
   private suspend fun fetchAlbum(): WritableArray? = withContext(Dispatchers.Default) {

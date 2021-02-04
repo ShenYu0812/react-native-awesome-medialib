@@ -1,12 +1,11 @@
 import React from 'react'
 import {TouchableOpacity, Text, StyleSheet, StatusBar, View} from 'react-native'
-import type {StackNavigationProp} from '@react-navigation/stack'
-import {white, black} from './common/Colors'
-import {SourceType} from './MediaLib'
+import {white, black} from '../common/Colors'
+import {SourceType} from '../screen/MediaLib'
+import type {BaseProps} from '../common/BaseProps'
+import type {ParamList} from '../common/models'
 
-interface Props {
-  navigation: StackNavigationProp<any>
-}
+type Props = BaseProps<ParamList, 'MediaSelector'>
 
 const MediaSelectorPage = (props: Props) => {
   const navigation = props.navigation
@@ -31,10 +30,10 @@ const MediaSelectorPage = (props: Props) => {
     <>
       <StatusBar backgroundColor={black} barStyle="light-content" />
       <View style={styles.rootContainer}>
-        <TouchableOpacity onPress={onPressImage} style={[styles.buttonContainer, {marginTop: 500}]}>
+        <TouchableOpacity onPress={onPressVideo} style={[styles.buttonContainer, {marginTop: 500}]}>
           <Text style={styles.textStyle}>视频</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={onPressVideo} style={[styles.buttonContainer, {top: 35}]}>
+        <TouchableOpacity onPress={onPressImage} style={[styles.buttonContainer, {top: 35}]}>
           <Text style={[styles.textStyle]}>图文</Text>
         </TouchableOpacity>
       </View>
