@@ -24,6 +24,7 @@ import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.ON_PUSH_CA
 import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.ON_PUSH_PREVIEW
 import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.ON_SHOW_TOAST
 import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.desc
+import io.project5e.lib.media.utils.NavigationEmitter.receiveEvent
 import java.text.SimpleDateFormat
 
 private const val toastNumLimit = 0
@@ -39,8 +40,6 @@ class GalleryAdapter(
   var selectLimit = 9
   private val durationInvalidate = context.resources.getString(R.string.duration_invalidate)
   private val formatInvalidate = context.resources.getString(R.string.format_invalidate)
-
-  var emitter: EventEmitter? = null
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GalleryViewHolder {
     val view = LayoutInflater.from(parent.context)
@@ -64,7 +63,7 @@ class GalleryAdapter(
         return@setOnClickListener
       }
       previewListener?.onPreview(position)
-      emitter?.receiveEvent(id, ON_PUSH_PREVIEW, null)
+      receiveEvent(id, ON_PUSH_PREVIEW, null)
     }
   }
 
@@ -78,7 +77,7 @@ class GalleryAdapter(
     vh.ivCamera.visibility = if (haveHeader) View.VISIBLE else View.GONE
     vh.ivPhoto.visibility = if (!haveHeader) View.VISIBLE else View.GONE
     vh.cbSelect.visibility = View.GONE
-    vh.container.setOnClickListener { emitter?.receiveEvent(id, ON_PUSH_CAMERA, null) }
+    vh.container.setOnClickListener { receiveEvent(id, ON_PUSH_CAMERA, null) }
   }
 
   private fun localImage(vh: GalleryViewHolder, position: Int) {
@@ -114,7 +113,7 @@ class GalleryAdapter(
       else -> formatInvalidate
     }
     val map = Arguments.createMap().apply { putString(desc, message) }
-    emitter?.receiveEvent(id, ON_SHOW_TOAST, map)
+    receiveEvent(id, ON_SHOW_TOAST, map)
   }
 
   private fun numberLimit(): String =

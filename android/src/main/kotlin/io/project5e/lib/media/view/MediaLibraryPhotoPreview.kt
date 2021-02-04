@@ -13,6 +13,7 @@ import io.project5e.lib.media.adapter.SelectedAdapter
 import io.project5e.lib.media.react.MediaLibraryPhotoPreviewManager.Companion.ON_FINISH_SELECT
 import io.project5e.lib.media.react.MediaLibraryPhotoPreviewManager.Companion.ON_SHOW_TOAST
 import io.project5e.lib.media.react.MediaLibraryPhotoPreviewManager.Companion.desc
+import io.project5e.lib.media.utils.NavigationEmitter.receiveEvent
 import io.project5e.lib.media.utils.ViewModelProviders
 import kotlinx.android.synthetic.main.view_media_preview.view.*
 import java.lang.ref.WeakReference
@@ -105,14 +106,14 @@ class MediaLibraryPhotoPreview constructor(
 
   private fun showToast() {
     val map = Arguments.createMap().apply { putString(desc, numberLimit()) }
-    model?.emitter?.receiveEvent(id, ON_SHOW_TOAST, map)
+    receiveEvent(id, ON_SHOW_TOAST, map)
   }
 
   private fun numberLimit(): String =
     context.resources.getString(R.string.number_limit, model?.getSelectLimit())
 
   private fun onNextStep() {
-    model?.emitter?.receiveEvent(id, ON_FINISH_SELECT, null)
+    receiveEvent(id, ON_FINISH_SELECT, null)
   }
 
   private fun markSelectedState(position: Int) {

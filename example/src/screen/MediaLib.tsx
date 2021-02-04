@@ -22,18 +22,19 @@ import {
   finishSelectMedia,
   MediaLibraryBottomToolBar,
   MediaLibraryAlbumItem,
+  fetchVideoURL,
 } from 'react-native-awesome-medialib'
 import {isIphoneX} from 'react-native-iphone-x-helper'
 import {RootSiblingParent} from 'react-native-root-siblings'
-import type {BaseProps} from './common/BaseProps'
-import {AlbumModel, processAlbumModel} from './models'
-import {black1A, white, black} from './common/Colors'
-import {albumListStyle, showToast} from './uitls/Utils'
-import {requestSinglePermission} from './uitls/PermissionChecker'
-import ThreeStageNavigationBar from './components/ThreeStageNavigationBar'
-import ProgressHUD from './components/ProgressHUD'
-import DismissButton from './images/dismiss_white_button.png'
-import DownArrow from './images/down_white_arrow.png'
+import {AlbumModel, ParamList, processAlbumModel} from '../common/models'
+import {black1A, white, black} from '../common/Colors'
+import {albumListStyle, showToast} from '../utils/Utils'
+import {requestSinglePermission} from '../utils/PermissionChecker'
+import ThreeStageNavigationBar from '../components/ThreeStageNavigationBar'
+import ProgressHUD from '../components/ProgressHUD'
+import DismissButton from '../images/dismiss_white_button.png'
+import DownArrow from '../images/down_white_arrow.png'
+import type {BaseProps} from '../common/BaseProps'
 
 export enum SourceType {
   main = 'main',
@@ -41,19 +42,13 @@ export enum SourceType {
   avatar = 'avatar',
 }
 
-export interface Props extends BaseProps<any> {
-  // 最大选择数量
-  maxSelectedMediaCount?: number
-  // 是否只展示视频
-  isVideoOnly?: boolean
-  // 从哪里调用
-  from: SourceType
-}
+export type Props = BaseProps<ParamList, 'MediaLib'>
 
-const MediaLibraryPage = (props: Props) => {
+const MediaLibPage = (props: Props) => {
   const navigation = props.navigation
-  const [maxSelectedMediaCount] = useState<number>(props.maxSelectedMediaCount ?? 9)
-  const [isVideoOnly] = useState<boolean>(props.isVideoOnly ?? false)
+  const param = props.route.params
+  const [maxSelectedMediaCount] = useState<number>(param?.maxSelectedMediaCount ?? 9)
+  const [isVideoOnly] = useState<boolean>(param?.isVideoOnly ?? false)
   const [selectedMediaCount, setSelectedMediaCount] = useState<number>(0)
   const [showProgressHUD, setShowProgressHUD] = useState<boolean>(false)
   const [currentAlbum, setCurrentAlbum] = useState<AlbumModel>()
@@ -185,21 +180,21 @@ const MediaLibraryPage = (props: Props) => {
     try {
       const res = await finishSelectMedia()
       console.warn(`finish select:${JSON.stringify(res)}`)
-      // if (props.from === SourceType.main) {
-      // props.navigator.push('SnackDetailEditorPage', {medias: res})
-      // } else if (props.from === SourceType.editor) {
-      // props.navigator.setResult({medias: res})
-      // props.navigator.dismiss()
-      // } else if (props.from === SourceType.avatar) {
-      // const photo = res[0]
-      // props.navigator.push('PhotoCropperPage', {
-      //  url: photo.url,
-      //  scale: photo.height / photo.width,
-      // })
-      // } else {
-      // props.navigator.setResult({medias: res})
-      // props.navigator.dismiss()
-      // }
+      if (param?.from === SourceType.main) {
+        // navigation.push('SnackDetailEditorPage', {medias: res})
+      } else if (param?.from === SourceType.editor) {
+        // navigation.setResult({medias: res})
+        // navigation.dismiss()
+      } else if (param?.from === SourceType.avatar) {
+        // const photo = res[0]
+        // navigation.push('PhotoCropperPage', {
+        //  url: photo.url,
+        //  scale: photo.height / photo.width,
+        // })
+      } else {
+        // navigation.setResult({medias: res})
+        navigation.goBack()
+      }
     } catch (error) {
       onShowToast('导出失败')
     } finally {
@@ -208,22 +203,22 @@ const MediaLibraryPage = (props: Props) => {
   }
 
   const onPushCameraPage = () => {
-    // props.navigator.push('CameraPage')
+    // navigation.navigate('CameraPage')
   }
 
   const onPushPreviewPage = async () => {
-    /* if (isVideoOnly) {
+    if (isVideoOnly) {
       try {
         const res = await fetchVideoURL()
         if (res) {
-          props.navigator.push('VideoPreviewPage', {url: res.url, scale: res.scale})
+          // navigation.navigate('VideoPreviewPage', {url: res.url, scale: res.scale})
         }
       } catch (error) {
         onShowToast(error.message)
       }
     } else {
-      props.navigator.push('MediaLibraryPhotoPreviewPage', {from: props.from})
-    }*/
+      navigation.push('PicturePreview', {from: param?.from})
+    }
   }
 
   const onShowToast = (desc: string) => {
@@ -273,7 +268,7 @@ const MediaLibraryPage = (props: Props) => {
   )
 }
 
-export default MediaLibraryPage
+export default MediaLibPage
 
 const styles = StyleSheet.create({
   container: {
