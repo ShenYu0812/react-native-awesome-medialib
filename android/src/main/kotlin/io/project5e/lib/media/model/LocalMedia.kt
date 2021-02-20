@@ -30,7 +30,7 @@ data class LocalMedia(
 
   override fun toString(): String {
     return "{\"_id\":$_id, " +
-      "\"mediaType\":$mediaType" +
+      "\"mediaType\":$mediaType, " +
       "\"bucketId\":$bucketId, " +
       "\"bucketName\":$bucketName, " +
       "\"srcPath\":$srcPath, " +

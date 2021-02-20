@@ -4,7 +4,6 @@ import android.view.Choreographer
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.*
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.LifecycleEventListener
@@ -14,15 +13,23 @@ import io.project5e.lib.media.R
 import io.project5e.lib.media.adapter.GalleryAdapter
 import io.project5e.lib.media.manager.CustomStaggerLayoutManager
 import io.project5e.lib.media.manager.MediaLibItemDecoration
-import io.project5e.lib.media.manager.PaginationScrollListener
 import io.project5e.lib.media.model.GalleryViewModel
 import io.project5e.lib.media.model.UpdateType.*
 import io.project5e.lib.media.model.LocalMedia
+import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.ON_ALBUM_UPDATE
 import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.ON_MEDIA_ITEM_SELECT
+import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.ON_PUSH_CAMERA
+import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.ON_PUSH_PREVIEW
+import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.ON_SHOW_TOAST
 import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.SELECT_MEDIA_COUNT
+import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.desc
+import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.newAlbums
 import io.project5e.lib.media.utils.NavigationEmitter.receiveEvent
 import io.project5e.lib.media.utils.ViewModelProviders
 import kotlinx.android.synthetic.main.view_media_lib.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 
 @Suppress("ViewConstructor", "COMPATIBILITY_WARNING", "Unused")
@@ -33,6 +40,11 @@ class NativeMediaLibraryView constructor(
   GalleryAdapter.OnPreviewMediaListener, LifecycleEventListener {
   private val tag = NativeMediaLibraryView::class.java.simpleName
 
+  private val toastNumLimit = 0
+  private val toastFormatNotSupport = 1
+  private val toastDurationInvalidate = 2
+
+  private val uiScope = CoroutineScope(Dispatchers.Main)
   private var registry: LifecycleRegistry =
     LifecycleRegistry(this@NativeMediaLibraryView)
 
@@ -40,9 +52,8 @@ class NativeMediaLibraryView constructor(
     CustomStaggerLayoutManager(3, StaggeredGridLayoutManager.VERTICAL).apply {
       gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_NONE
     }
-  private var scrollListener: CustomOnScrollListener
   private val gapDimens = resources.getDimensionPixelSize(R.dimen.dp_6)
-  private var rvAdapter: GalleryAdapter = GalleryAdapter(context = themedReactContext)
+  private var rvAdapter: GalleryAdapter = GalleryAdapter()
   private val model: GalleryViewModel?
   private val ownerWr: WeakReference<ViewModelStoreOwner>
   private var showList: MutableList<LocalMedia> = mutableListOf()
@@ -52,22 +63,21 @@ class NativeMediaLibraryView constructor(
     registry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
     ownerWr = WeakReference(themedReactContext.currentActivity as? ViewModelStoreOwner)
     model = ownerWr.get()?.let { ViewModelProviders.of(it).get(GalleryViewModel::class.java) }
+    model?.addResource()
     View.inflate(context, R.layout.view_media_lib, this)
     rv_gallery.adapter = rvAdapter
     rv_gallery.layoutManager = layoutManager
     rvAdapter.selectChangedListener = this@NativeMediaLibraryView
     rvAdapter.previewListener = this@NativeMediaLibraryView
-    scrollListener = CustomOnScrollListener(layoutManager)
     loadData()
     rv_gallery.addItemDecoration(MediaLibItemDecoration(gapDimens))
-    rv_gallery.addOnScrollListener(scrollListener)
   }
 
   private fun loadData() {
     model ?: return
+    requestLayoutAndMeasure()
     model.shouldShowList.observe(this@NativeMediaLibraryView) { list ->
       if (list == null) return@observe
-      requestLayoutAndMeasure()
       rvAdapter.haveHeader = !model.isVideo()
       showList.clear()
       showList.addAll(list)
@@ -79,20 +89,23 @@ class NativeMediaLibraryView constructor(
       }
       rv_gallery.smoothScrollBy(0, 1)
       rvAdapter.id = id
-      scrollListener.isLoading = false
       registry.handleLifecycleEvent(Lifecycle.Event.ON_START)
     }
     model.changeAlbum.observe(this@NativeMediaLibraryView) {
-      if (it == true) rv_gallery.smoothScrollToPosition(0)
+      if (it == true) rv_gallery.scrollToPosition(0)
     }
-    model.notifyGalleryUpdate.observe(this@NativeMediaLibraryView) {
-      if (it != true) return@observe
-      model.fetchResource()
-      model.updateAlbum(id)
+    model.notifyGalleryUpdate.observe(this@NativeMediaLibraryView) { add ->
+      if (add == null) return@observe
+      uiScope.launch {
+        val bundle = Arguments.createMap()
+          .also { it.putArray(newAlbums, model.fetchAlbum(true, add)) }
+        receiveEvent(id, ON_ALBUM_UPDATE, bundle)
+      }
+      if (model.getSelectedCount() >= model.selectLimit.value ?: 9) showToast(toastNumLimit)
     }
-    model.selectLimit.observe(this@NativeMediaLibraryView) {
-      if (it == null || it <= 0) return@observe
-      rvAdapter.selectLimit = it
+    model.sourceAdded.observe(this@NativeMediaLibraryView) {
+      if (it != false) return@observe
+      registry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     }
   }
 
@@ -108,11 +121,19 @@ class NativeMediaLibraryView constructor(
   }
 
   override fun onChanged(position: Int, isChecked: Boolean) {
-    model?.updateSelectItem(position, isChecked)
+    model ?: return
+    model.updateSelectItem(position, isChecked)
+    if (model.shouldShowList.value?.get(position)?.enable == false) showToast(toastNumLimit)
   }
 
-  override fun onPreview(position: Int) {
-    model?.let { it.previewPosition = position }
+  override fun onPreview(position: Int, haveHeader: Boolean) {
+    model ?: return
+    if (position == -1 && haveHeader) receiveEvent(id, ON_PUSH_CAMERA, null)
+    if (position == -1 && haveHeader) return
+    val duration = model.shouldShowList.value?.get(position)?.duration
+    if (duration != null && duration < 5000) showToast(toastDurationInvalidate)
+    model.previewPosition = position
+    receiveEvent(id, ON_PUSH_PREVIEW, null)
   }
 
   override fun onHostResume() {}
@@ -186,18 +207,21 @@ class NativeMediaLibraryView constructor(
     layout(left, top, right, bottom)
   }
 
-  private inner class CustomOnScrollListener(
-    layoutManager: RecyclerView.LayoutManager
-  ) : PaginationScrollListener(layoutManager) {
-
-    override fun loadMoreItems() {
-      isLoading = true
-      model ?: return
-      isLastPage = model.allMediaHadGot
-      if (isLastPage) return
-      model.fetchResource(pageNum = model.preloadPageNum++)
+  private fun showToast(type: Int) {
+    model ?: return
+    val message = when (type) {
+      toastNumLimit -> numberLimit()
+      toastDurationInvalidate -> durationInvalidate
+      else -> formatInvalidate
     }
-
-    override fun getTotalPageCount(): Int = showList.size
+    val map = Arguments.createMap().apply { putString(desc, message) }
+    receiveEvent(id, ON_SHOW_TOAST, map)
   }
+
+  private fun numberLimit(): String = context.resources
+    .getString(R.string.number_limit, model?.selectLimit?.value ?: 9)
+
+  private val durationInvalidate = context.resources.getString(R.string.duration_invalidate)
+  private val formatInvalidate = context.resources.getString(R.string.format_invalidate)
+
 }

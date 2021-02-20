@@ -99,7 +99,7 @@ const MediaLibPage = (props: Props) => {
   useEffect(() => {
     initalLibrary(readPermissionAndroidCallback)
     return () => {
-      if (Platform.OS === 'ios') clear()
+      clear()
     }
   }, [])
 

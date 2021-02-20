@@ -33,7 +33,7 @@ import kotlin.math.abs
 const val allPhotoBucketId = -1L
 const val allVideoBucketId = -2L
 const val allMediaBucketId = -3L
-const val defaultPageSize = 60
+const val pageLimit = 30
 
 class LocalMediaManager private constructor() {
 
@@ -57,7 +57,7 @@ class LocalMediaManager private constructor() {
       throw IllegalArgumentException("LocalMediaManager is not init before use!")
     }
 
-    val requestList: MutableList<RequestBuilder> = mutableListOf()
+    var requestList: List<RequestBuilder> = emptyList()
 
     @Suppress("unused")
     private var tag = "LocalMediaManager"
@@ -73,9 +73,9 @@ class LocalMediaManager private constructor() {
   private fun shouldIntercept(req: RequestBuilder): Boolean {
     requestList.find { it.requestOptions == req.requestOptions }?.let {
       if (it.isRequesting) return true
-      return abs(req.timestamp - it.timestamp) > 500
+      return abs(req.timestamp - it.timestamp) <= 500
     } ?: run {
-      requestList.add(req)
+      requestList = requestList + req
       return false
     }
   }

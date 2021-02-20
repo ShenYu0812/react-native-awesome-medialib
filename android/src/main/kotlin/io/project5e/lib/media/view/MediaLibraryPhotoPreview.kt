@@ -47,6 +47,7 @@ class MediaLibraryPhotoPreview constructor(
 
     rv_selected.layoutManager = layoutManager
     rv_selected.adapter = rvAdapter
+    rvAdapter.itemClickListener = this@MediaLibraryPhotoPreview
     iv_select.setOnClickListener { onChanged() }
     tv_next_step.setOnClickListener { onNextStep() }
 
@@ -79,8 +80,9 @@ class MediaLibraryPhotoPreview constructor(
 
   override fun getLifecycle(): Lifecycle = registry
 
-  override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-  }
+  override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
+
+  override fun onPageScrollStateChanged(state: Int) {}
 
   override fun onPageSelected(position: Int) {
     currentPosition = position
@@ -135,9 +137,6 @@ class MediaLibraryPhotoPreview constructor(
       val index = list.indexOf(find)
       if (index < 0 || index >= list.size) null else index
     }
-  }
-
-  override fun onPageScrollStateChanged(state: Int) {
   }
 
   override fun onClick(position: Int) {

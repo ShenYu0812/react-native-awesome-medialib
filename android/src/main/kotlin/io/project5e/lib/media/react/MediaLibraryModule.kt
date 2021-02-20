@@ -5,7 +5,7 @@ import com.facebook.react.bridge.*
 import io.project5e.lib.media.model.GalleryViewModel
 import io.project5e.lib.media.utils.ViewModelProviders
 
-@Suppress("unused", "DEPRECATION")
+@Suppress("Unused", "DEPRECATION")
 class MediaLibraryModule(
   reactContext: ReactApplicationContext
 ) : ReactContextBaseJavaModule(reactContext) {
@@ -43,7 +43,7 @@ class MediaLibraryModule(
   @ReactMethod
   fun clear() {
     val viewModel = getViewModel(reactApplicationContext)
-    viewModel?.resetData()
+    viewModel?.clearViewModel()
   }
 
   @ReactMethod

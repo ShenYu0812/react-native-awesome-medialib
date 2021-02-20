@@ -8,28 +8,23 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.WritableArray
 import io.project5e.lib.media.manager.*
 import io.project5e.lib.media.model.UpdateType.*
-import io.project5e.lib.media.react.EventEmitter
-import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.ON_ALBUM_UPDATE
-import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.newAlbums
-import io.project5e.lib.media.utils.NavigationEmitter.receiveEvent
 import kotlinx.coroutines.*
 
-private const val photoSelectLimit = 9
-private const val videoSelectLimit = 1
 
+@Suppress("DEPRECATION")
 class GalleryViewModel : ViewModel() {
 
+  private val photoSelectLimit = 9
+  private val videoSelectLimit = 1
   private val viewModelJob = SupervisorJob()
   private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
-  private var mediaManager: LocalMediaManager = LocalMediaManager.getInstance()
-  private val allMediaList: MutableLiveData<MutableList<LocalMedia>> = MutableLiveData(
-    mutableListOf()
-  )
+  private val mediaManager: LocalMediaManager = LocalMediaManager.getInstance()
+  private val allMediaList: MutableLiveData<MutableList<LocalMedia>> = MutableLiveData()
   private val currentBucketId: MutableLiveData<Long> = MutableLiveData()
-  var selectLimit: MutableLiveData<Int> = MutableLiveData()
+  val selectLimit: MutableLiveData<Int> = MutableLiveData()
 
-  var notifyGalleryUpdate: MutableLiveData<Boolean> = MutableLiveData(false)
+  val notifyGalleryUpdate: MutableLiveData<LocalMedia?> = MutableLiveData()
   val shouldShowList: MediatorLiveData<List<LocalMedia>> = MediatorLiveData()
   val selectedList = Transformations.map(allMediaList) { list ->
     list?.filter { it.checked }?.sortedBy { it.order }
@@ -37,12 +32,11 @@ class GalleryViewModel : ViewModel() {
   var changeAlbum: MutableLiveData<Boolean> = MutableLiveData(false)
   var previewPosition: Int? = null
 
-  var preloadPageNum = 1
   private var mediaType: Int? = null
 
-  init {
-    shouldShowList.postValue(mutableListOf())
-    allMediaList.postValue(mutableListOf())
+  val sourceAdded: MutableLiveData<Boolean> = MutableLiveData(null)
+  fun addResource() = uiScope.launch {
+    if (sourceAdded.value == true) return@launch
     shouldShowList.addSource(allMediaList) {
       if (it == null || it.isEmpty()) return@addSource
       shouldShowList.postValue(product(it))
@@ -53,6 +47,7 @@ class GalleryViewModel : ViewModel() {
       product ?: return@addSource
       shouldShowList.postValue(product)
     }
+    sourceAdded.value = true
   }
 
   private fun product(list: MutableList<LocalMedia>?) = list?.filter { m ->
@@ -71,21 +66,16 @@ class GalleryViewModel : ViewModel() {
   var currentUpdateType: UpdateType? = null
     private set
 
-  fun fetchResource(
-    bucketId: Long? = null,
-    pageNum: Int? = null,
-    pageLimit: Int? = null
-  ) = uiScope.launch {
-    val tBucket = bucketId ?: currentBucketId.value ?: allMediaBucketId
-    val pl = if (pageNum != null) pageLimit ?: defaultPageSize else null
-    val deferred = async { mediaManager.applyBucket(tBucket).loadPage(pageNum, pl).request() }
+  private fun preloadResource() = uiScope.launch {
+    val tb = currentBucketId.value ?: allMediaBucketId
+    val deferred = async { mediaManager.applyBucket(tb).loadPage(1, pageLimit).request() }
     val list = deferred.await() ?: return@launch
-    pl?.let { allMediaHadGot = list.size < it } ?: run { allMediaHadGot = list.isEmpty() }
-    updateLocalMedia(list, if (pageNum != null) UPDATE_PART else UPDATE_ALL)
+    allMediaHadGot = list.size < pageLimit || list.isEmpty()
+    updateLocalMedia(list, if (allMediaHadGot) UPDATE_ALL else UPDATE_PART)
   }
 
-  fun notifyGalleryChanged(changed: Boolean) = uiScope.launch {
-    notifyGalleryUpdate.value = changed
+  fun notifyGalleryChanged(added: LocalMedia?) = uiScope.launch {
+    notifyGalleryUpdate.value = added
   }
 
   private fun updateLocalMedia(list: MutableList<LocalMedia>, updateType: UpdateType) =
@@ -94,7 +84,7 @@ class GalleryViewModel : ViewModel() {
       if (allMediaHadGot && updateType == UPDATE_PART) return@launch
       allMediaList.value = when (updateType) {
         UPDATE_ALL -> list
-        UPDATE_PART -> allMediaList.value?.apply { addAll(list) }
+        UPDATE_PART -> allMediaList.value?.apply { if (ensureNotRepeat(list)) addAll(list) }
         else -> replaceItem(list)
       }
     }
@@ -105,6 +95,13 @@ class GalleryViewModel : ViewModel() {
       removeAt(index)
       add(index, m)
     }
+  }
+
+  private fun ensureNotRepeat(list: MutableList<LocalMedia>): Boolean {
+    val temp = allMediaList.value
+    if (temp.isNullOrEmpty()) return true
+    list.iterator().forEach { temp.find { t -> t._id == it._id } ?: return true }
+    return false
   }
 
   fun updateSelectItem(position: Int, isChecked: Boolean, isOtherPage: Boolean = false) {
@@ -148,32 +145,40 @@ class GalleryViewModel : ViewModel() {
     if (albumList.size <= 0) return@launch
     if (index < 0 || index >= albumList.size) return@launch
     val album = albumList[index]
-    preloadPageNum = 1
     currentUpdateType = UPDATE_ALL
     changeAlbum.value = true
     changeAlbum.value = false
     currentBucketId.value = album.albumId ?: allPhotoBucketId
   }
 
-  fun resetData() = uiScope.launch {
-    allMediaList.value = null
-    shouldShowList.value = null
-    currentBucketId.value = null
-    changeAlbum.value = null
-    previewPosition = null
-    notifyGalleryUpdate.value = null
-    selectLimit.value = null
-    currentUpdateType = null
-    preloadPageNum = 1
-    mediaType = null
+  fun clearViewModel() {
+    allMediaList.postValue(mutableListOf())
+    currentBucketId.postValue(null)
+    removeResource()
+    savedSelected.clear()
+    fromCamera.clear()
+    changeAlbum.postValue(false)
+    notifyGalleryUpdate.postValue(null)
+    selectLimit.postValue(null)
     allMediaHadGot = false
+    previewPosition = null
+    currentUpdateType = null
+    mediaType = null
     albumList.clear()
+  }
+
+  private fun removeResource() = uiScope.launch {
+    shouldShowList.removeSource(allMediaList)
+    shouldShowList.removeSource(currentBucketId)
+    sourceAdded.value = false
+    sourceAdded.value = null
   }
 
   fun fetchAllAssets(isVideo: Boolean) = uiScope.launch {
     mediaType = if (isVideo) MEDIA_TYPE_VIDEO else MEDIA_TYPE_IMAGE
     currentBucketId.value = if (isVideo) allVideoBucketId else allPhotoBucketId
-    fetchResource(pageNum = preloadPageNum++)
+    if (allMediaHadGot) return@launch
+    preloadResource()
   }
 
   fun isVideo() = mediaType == MEDIA_TYPE_VIDEO
@@ -182,27 +187,65 @@ class GalleryViewModel : ViewModel() {
     promise.resolve(fetchAlbum())
   }
 
-  fun updateAlbum(id: Int? = null) = uiScope.launch {
-    id ?: return@launch
-    val bundle = Arguments.createMap().also { it.putArray(newAlbums, fetchAlbum()) }
-    receiveEvent(id, ON_ALBUM_UPDATE, bundle)
+  suspend fun fetchAlbum(restore: Boolean = false, added: LocalMedia? = null): WritableArray? =
+    withContext(Dispatchers.Default) {
+      added?.let { fromCamera.add(added) }
+      if (restore) tempSaveSelectedList()
+      val deferredA = async { mediaManager.applyBucket(allMediaBucketId).request() }
+      var allMedia = deferredA.await() ?: return@withContext null
+      if (restore) allMedia = restoreSelectedStatus(allMedia, added)
+      savedSelected.clear()
+      updateLocalMedia(allMedia, UPDATE_ALL)
+      allMediaHadGot = true
+      val alAlbum = mediaManager.getAllAlbum(allMedia, mediaType)
+      albumList.clear()
+      albumList.addAll(alAlbum)
+      val deferredB = async { transferToArgumentsArray(albumList) }
+      deferredB.await()
+    }
+
+  private val savedSelected: MutableList<LocalMedia> = mutableListOf()
+  private val fromCamera: MutableList<LocalMedia> = mutableListOf()
+  private fun tempSaveSelectedList() {
+    savedSelected.clear()
+    val allSelected = getAllSelectedItem()
+    allSelected?.let { savedSelected.addAll(it) }
+    val iterator = fromCamera.iterator()
+    iterator.forEach { m ->
+      savedSelected.find { it.name == m.name }?.let {
+        iterator.remove()
+      } ?: run {
+        savedSelected.add(m)
+      }
+    }
   }
 
-  private suspend fun fetchAlbum(): WritableArray? = withContext(Dispatchers.Default) {
-    val deferredA = async { mediaManager.applyBucket(allMediaBucketId).request() }
-    val allMedia = deferredA.await() ?: return@withContext null
-    allMediaHadGot = true
-    updateLocalMedia(allMedia, UPDATE_ALL)
-    val alAlbum = mediaManager.getAllAlbum(allMedia, mediaType)
-    albumList.clear()
-    albumList.addAll(alAlbum)
-    val deferredB = async { transferToArgumentsArray(albumList) }
-    deferredB.await()
+  private fun restoreSelectedStatus(
+    origin: MutableList<LocalMedia>,
+    added: LocalMedia?
+  ): MutableList<LocalMedia> {
+    added?.let { t -> origin.find { t.name == it.name } ?: origin.add(0, t) }
+    savedSelected.iterator().forEach { m ->
+      origin.find { it._id == m._id || it.name == m.name }?.apply { order = m.order }
+        ?.apply { checked = m.checked }?.apply { enable = m.enable }
+    }
+    selectLimit.value?.let { s ->
+      val size = savedSelected.size
+      if (size >= s) origin.filter { !it.checked }.forEach { it.enable = false }
+      val before = getSelectedCount()
+      val order0 = if (before < s) before + 1 else null
+      origin[0].apply { enable = before < s }.apply { checked = enable }
+        .apply { order = order0 }
+      val after = order0 ?: before
+      if (after < s) return@let
+      origin.filter { !it.checked }.forEach { it.enable = false }
+    }
+    return origin
   }
 
   private suspend fun transferToArgumentsArray(list: MutableList<AlbumModel>): WritableArray =
     withContext(Dispatchers.IO) {
-      Arguments.createArray().also { list.forEach { m -> it.pushMap(m.toMap()) } }
+      Arguments.createArray().also { list.iterator().forEach { m -> it.pushMap(m.toMap()) } }
     }
 
   fun previewVideo(promise: Promise) = uiScope.launch {

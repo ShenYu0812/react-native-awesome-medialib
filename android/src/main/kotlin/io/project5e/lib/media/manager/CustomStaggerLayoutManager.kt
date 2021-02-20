@@ -1,9 +1,9 @@
 package io.project5e.lib.media.manager
 
-import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 
+@Suppress("Unused")
 class CustomStaggerLayoutManager constructor(spanCount: Int, orientation: Int) :
   StaggeredGridLayoutManager(spanCount, orientation) {
   companion object {
@@ -14,7 +14,6 @@ class CustomStaggerLayoutManager constructor(spanCount: Int, orientation: Int) :
     try {
       super.onLayoutChildren(recycler, state)
     } catch (e: Exception) {
-      Log.e(TAG, "$e.message")
     }
   }
 }
