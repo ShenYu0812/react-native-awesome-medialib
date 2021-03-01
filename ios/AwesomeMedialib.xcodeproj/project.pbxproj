@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-
 		5E555C0D2413F4C50049A1A2 /* AwesomeMedialib.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* AwesomeMedialib.m */; };
-		F4FF95D7245B92E800C19C63 /*  AwesomeMedialib.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FF95D6245B92E800C19C63 /*  AwesomeMedialib.swift */; };
-
+		F4FF95D7245B92E800C19C63 /* AwesomeMedialib.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FF95D6245B92E800C19C63 /* AwesomeMedialib.swift */; };
+		3E5B6C71E4164D338DF4484F /* libRNDeviceInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D93D7284AEDB41928345FA19 /* libRNDeviceInfo.a */; };
+		4C975D329584430EBE51F6F2 /* libRCTVideo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E69ECCE04A346D386240DAC /* libRCTVideo.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -27,11 +27,13 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libAwesomeMedialib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libAwesomeMedialib.a; sourceTree = BUILT_PRODUCTS_DIR; };
-
 		B3E7B5891CC2AC0600A0062D /* AwesomeMedialib.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AwesomeMedialib.m; sourceTree = "<group>"; };
 		F4FF95D5245B92E700C19C63 /* AwesomeMedialib-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AwesomeMedialib-Bridging-Header.h"; sourceTree = "<group>"; };
 		F4FF95D6245B92E800C19C63 /* AwesomeMedialib.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwesomeMedialib.swift; sourceTree = "<group>"; };
-
+		8200B3D7D54240488FC1A227 /* RNDeviceInfo.xcodeproj */ = {isa = PBXFileReference; name = "RNDeviceInfo.xcodeproj"; path = "../node_modules/react-native-device-info/ios/RNDeviceInfo.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		D93D7284AEDB41928345FA19 /* libRNDeviceInfo.a */ = {isa = PBXFileReference; name = "libRNDeviceInfo.a"; path = "libRNDeviceInfo.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		5E303DB9D65048AC96B90A51 /* RCTVideo.xcodeproj */ = {isa = PBXFileReference; name = "RCTVideo.xcodeproj"; path = "../node_modules/react-native-video/ios/RCTVideo.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		9E69ECCE04A346D386240DAC /* libRCTVideo.a */ = {isa = PBXFileReference; name = "libRCTVideo.a"; path = "libRCTVideo.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,6 +41,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3E5B6C71E4164D338DF4484F /* libRNDeviceInfo.a in Frameworks */,
+				4C975D329584430EBE51F6F2 /* libRCTVideo.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -56,14 +60,23 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-
 				F4FF95D6245B92E800C19C63 /* AwesomeMedialib.swift */,
 				B3E7B5891CC2AC0600A0062D /* AwesomeMedialib.m */,
 				F4FF95D5245B92E700C19C63 /* AwesomeMedialib-Bridging-Header.h */,
-
 				134814211AA4EA7D00B7C361 /* Products */,
+				AC090C80AB7D483E857E8249 /* Libraries */,
 			);
 			sourceTree = "<group>";
+		};
+		AC090C80AB7D483E857E8249 /* Libraries */ = {
+			isa = "PBXGroup";
+			children = (
+				8200B3D7D54240488FC1A227 /* RNDeviceInfo.xcodeproj */,
+				5E303DB9D65048AC96B90A51 /* RCTVideo.xcodeproj */,
+			);
+			name = Libraries;
+			sourceTree = "<group>";
+			path = "";
 		};
 /* End PBXGroup section */
 
@@ -91,7 +104,7 @@
 		58B511D31A9E6C8500147676 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0920;
+				LastUpgradeCheck = 920;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					58B511DA1A9E6C8500147676 = {
@@ -122,10 +135,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-
 				F4FF95D7245B92E800C19C63 /* AwesomeMedialib.swift in Sources */,
 				B3E7B58A1CC2AC0600A0062D /* AwesomeMedialib.m in Sources */,
-
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -234,15 +245,17 @@
 					"$(SRCROOT)/../../../React/**",
 					"$(SRCROOT)/../../react-native/React/**",
 				);
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/AwesomeMedialib\"",
+					"\"$(SRCROOT)/AwesomeMedialib\"",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = AwesomeMedialib;
 				SKIP_INSTALL = YES;
-
 				SWIFT_OBJC_BRIDGING_HEADER = "AwesomeMedialib-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-
 			};
 			name = Debug;
 		};
@@ -255,14 +268,16 @@
 					"$(SRCROOT)/../../../React/**",
 					"$(SRCROOT)/../../react-native/React/**",
 				);
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/AwesomeMedialib\"",
+					"\"$(SRCROOT)/AwesomeMedialib\"",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = AwesomeMedialib;
 				SKIP_INSTALL = YES;
-
 				SWIFT_OBJC_BRIDGING_HEADER = "AwesomeMedialib-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
-
 			};
 			name = Release;
 		};

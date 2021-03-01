@@ -11,11 +11,11 @@ npm install react-native-awesome-medialib
 ## Usage
 
 ```js
-import AwesomeMediLib from "react-native-awesome-medialib";
+import AwesomeMedialib from "react-native-awesome-medialib";
 
 // ...
 
-const result = await AwesomeMediLib.multiply(3, 7);
+const result = await AwesomeMedialib.multiply(3, 7);
 ```
 
 ## Contributing

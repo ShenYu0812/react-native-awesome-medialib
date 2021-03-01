@@ -6,20 +6,10 @@ const MediaLibraryView = requireNativeComponent('MediaLibraryView') as any
 export interface MediaLibraryViewProps {
   style: ViewStyle
   maxSelectedMediaCount: number
-  /*
-  {
-    selectedMediaCount: number
-    overLimit: boolean
-  }
-   */
+
   onMediaItemSelect(e: any): void
   onPushPreviewPage(): void
   onPushCameraPage(): void
-  /*
-  {
-    desc: string
-  }
-  */
   onShowToast(desc: string): void
   onAlbumUpdate(e: any): void
 }

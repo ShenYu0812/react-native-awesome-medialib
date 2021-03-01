@@ -1,7 +1,7 @@
 package io.project5e.lib.media.view
 
+import android.util.Log
 import android.view.Choreographer
-import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -16,6 +16,7 @@ import io.project5e.lib.media.manager.MediaLibItemDecoration
 import io.project5e.lib.media.model.GalleryViewModel
 import io.project5e.lib.media.model.UpdateType.*
 import io.project5e.lib.media.model.LocalMedia
+import io.project5e.lib.media.utils.ViewModelProviders.getViewModel
 import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.ON_ALBUM_UPDATE
 import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.ON_MEDIA_ITEM_SELECT
 import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.ON_PUSH_CAMERA
@@ -24,18 +25,15 @@ import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.ON_SHOW_TO
 import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.SELECT_MEDIA_COUNT
 import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.desc
 import io.project5e.lib.media.react.MediaLibraryViewManager.Companion.newAlbums
-import io.project5e.lib.media.utils.NavigationEmitter.receiveEvent
-import io.project5e.lib.media.utils.ViewModelProviders
+import io.project5e.lib.media.react.EventEmitter
 import kotlinx.android.synthetic.main.view_media_lib.view.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.lang.ref.WeakReference
+import kotlinx.coroutines.*
 
 @Suppress("ViewConstructor", "COMPATIBILITY_WARNING", "Unused")
 class NativeMediaLibraryView constructor(
   themedReactContext: ThemedReactContext,
-  private val reactApplicationContext: ReactApplicationContext
+  private val reactAppContext: ReactApplicationContext,
+  private val navigationEmitter: EventEmitter
 ) : ConstraintLayout(themedReactContext), LifecycleOwner, GalleryAdapter.OnSelectChangedListener,
   GalleryAdapter.OnPreviewMediaListener, LifecycleEventListener {
   private val tag = NativeMediaLibraryView::class.java.simpleName
@@ -55,16 +53,14 @@ class NativeMediaLibraryView constructor(
   private val gapDimens = resources.getDimensionPixelSize(R.dimen.dp_6)
   private var rvAdapter: GalleryAdapter = GalleryAdapter()
   private val model: GalleryViewModel?
-  private val ownerWr: WeakReference<ViewModelStoreOwner>
   private var showList: MutableList<LocalMedia> = mutableListOf()
 
   init {
     themedReactContext.addLifecycleEventListener(this)
     registry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    ownerWr = WeakReference(themedReactContext.currentActivity as? ViewModelStoreOwner)
-    model = ownerWr.get()?.let { ViewModelProviders.of(it).get(GalleryViewModel::class.java) }
+    model = getViewModel(themedReactContext, GalleryViewModel::class.java)
     model?.addResource()
-    View.inflate(context, R.layout.view_media_lib, this)
+    inflate(context, R.layout.view_media_lib, this)
     rv_gallery.adapter = rvAdapter
     rv_gallery.layoutManager = layoutManager
     rvAdapter.selectChangedListener = this@NativeMediaLibraryView
@@ -97,9 +93,10 @@ class NativeMediaLibraryView constructor(
     model.notifyGalleryUpdate.observe(this@NativeMediaLibraryView) { add ->
       if (add == null) return@observe
       uiScope.launch {
+        Log.d("find_bugs", "notifyGalleryUpdate: invoke fetchAlbum")
         val bundle = Arguments.createMap()
           .also { it.putArray(newAlbums, model.fetchAlbum(true, add)) }
-        receiveEvent(id, ON_ALBUM_UPDATE, bundle)
+        navigationEmitter.receiveEvent(id, ON_ALBUM_UPDATE, bundle)
       }
       if (model.getSelectedCount() >= model.selectLimit.value ?: 9) showToast(toastNumLimit)
     }
@@ -128,12 +125,14 @@ class NativeMediaLibraryView constructor(
 
   override fun onPreview(position: Int, haveHeader: Boolean) {
     model ?: return
-    if (position == -1 && haveHeader) receiveEvent(id, ON_PUSH_CAMERA, null)
-    if (position == -1 && haveHeader) return
+    if (position == -1 && haveHeader) {
+      navigationEmitter.receiveEvent(id, ON_PUSH_CAMERA, null)
+      return
+    }
     val duration = model.shouldShowList.value?.get(position)?.duration
     if (duration != null && duration < 5000) showToast(toastDurationInvalidate)
     model.previewPosition = position
-    receiveEvent(id, ON_PUSH_PREVIEW, null)
+    navigationEmitter.receiveEvent(id, ON_PUSH_PREVIEW, null)
   }
 
   override fun onHostResume() {}
@@ -149,7 +148,7 @@ class NativeMediaLibraryView constructor(
   private fun onItemSelected(selectedCount: Int) {
     val dataMap = Arguments.createMap()
     dataMap.putInt(SELECT_MEDIA_COUNT, selectedCount)
-    receiveEvent(id, ON_MEDIA_ITEM_SELECT, dataMap)
+    navigationEmitter.receiveEvent(id, ON_MEDIA_ITEM_SELECT, dataMap)
   }
 
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -194,7 +193,7 @@ class NativeMediaLibraryView constructor(
   private fun operateViewTreeAllNode() {
     if (model?.currentUpdateType != UPDATE_ALL) return
     manuallyLayoutChildren()
-    if (!reactApplicationContext.hasActiveCatalystInstance()) return
+    if (!reactAppContext.hasActiveCatalystInstance()) return
     viewTreeObserver.dispatchOnGlobalLayout()
   }
 
@@ -215,7 +214,7 @@ class NativeMediaLibraryView constructor(
       else -> formatInvalidate
     }
     val map = Arguments.createMap().apply { putString(desc, message) }
-    receiveEvent(id, ON_SHOW_TOAST, map)
+    navigationEmitter.receiveEvent(id, ON_SHOW_TOAST, map)
   }
 
   private fun numberLimit(): String = context.resources

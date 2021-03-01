@@ -7,7 +7,6 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
 import kotlinx.android.parcel.Parcelize
 
-
 @Parcelize
 data class LocalMedia(
   var _id: Long? = null,
@@ -53,7 +52,7 @@ data class LocalMedia(
       putString("type", if (mediaType == MEDIA_TYPE_IMAGE) "image" else "video")
       putInt("width", width)
       putInt("height", height)
-      putString("url", srcPath)
+      putString("url", uri?.toString() ?: Uri.parse(srcPath).toString())
     }
   }
 
@@ -61,7 +60,7 @@ data class LocalMedia(
     return Arguments.createMap().apply {
       putString("key", _id.toString())
       putInt("scale", ((width * 1.0f) / (height * 1.0f)).toInt())
-      putString("url", srcPath)
+      putString("url", uri.toString())
     }
   }
 

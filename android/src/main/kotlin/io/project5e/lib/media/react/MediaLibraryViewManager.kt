@@ -1,18 +1,18 @@
 package io.project5e.lib.media.react
 
-import androidx.lifecycle.ViewModelStoreOwner
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.MapBuilder
 import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.annotations.ReactProp
 import io.project5e.lib.media.model.GalleryViewModel
-import io.project5e.lib.media.utils.ViewModelProviders
+import io.project5e.lib.media.utils.ViewModelProviders.getViewModel
 import io.project5e.lib.media.view.NativeMediaLibraryView
 
 @Suppress("Unused", "UNUSED_PARAMETER")
 class MediaLibraryViewManager(
-  private val applicationContext: ReactApplicationContext
+  private val applicationContext: ReactApplicationContext,
+  private val navigationEmitter: EventEmitter
 ) : SimpleViewManager<NativeMediaLibraryView>() {
 
   companion object {
@@ -25,18 +25,18 @@ class MediaLibraryViewManager(
     const val ON_PUSH_CAMERA = "onPushCameraPage"
     const val ON_PUSH_PREVIEW = "onPushPreviewPage"
     const val SELECT_MEDIA_COUNT = "selectedMediaCount"
-    const val ON_ALBUM_UPDATE = "onAlbumUpdate"
+    const val ON_ALBUM_UPDATE: String = "onAlbumUpdate"
     const val ON_SHOW_TOAST = "onShowToast"
   }
 
   override fun getName(): String = MEDIA_LIBRARY_VIEW
 
   override fun createViewInstance(reactContext: ThemedReactContext): NativeMediaLibraryView =
-    NativeMediaLibraryView(reactContext, applicationContext)
+    NativeMediaLibraryView(reactContext, applicationContext, navigationEmitter)
 
   @ReactProp(name = "maxSelectedMediaCount")
   fun setMaxSelectedCount(v: NativeMediaLibraryView, count: Int) {
-    val model = getViewModel(applicationContext)
+    val model = getViewModel(applicationContext, GalleryViewModel::class.java)
     model?.updateSelectLimit(count)
   }
 
@@ -63,10 +63,5 @@ class MediaLibraryViewManager(
         MapBuilder.of(key, MapBuilder.of(bubbled, ON_SHOW_TOAST))
       )
       .build()
-  }
-
-  private fun getViewModel(context: ReactApplicationContext): GalleryViewModel? {
-    val owner: ViewModelStoreOwner? = context.currentActivity as? ViewModelStoreOwner
-    return owner?.let { ViewModelProviders.of(it).get(GalleryViewModel::class.java) }
   }
 }

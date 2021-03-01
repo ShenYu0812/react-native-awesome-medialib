@@ -23,7 +23,7 @@ import android.provider.MediaStore.MediaColumns.WIDTH
 import android.util.Log
 import io.project5e.lib.media.model.AlbumModel
 import io.project5e.lib.media.model.LocalMedia
-import io.project5e.lib.media.utils.BitmapBase64Utils
+import io.project5e.lib.media.utils.BitmapUtils
 import io.project5e.lib.media.utils.VersionUtils.isAboveAndroidQ
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -246,7 +246,7 @@ class LocalMediaManager private constructor() {
     val time = item.duration?.let { it / 2 } ?: -1
     val bitmap = retriever.getFrameAtTime(time)
     bitmap ?: return ""
-    return "data:image/png;base64,${BitmapBase64Utils.bitmapToBase64(bitmap)}"
+    return "data:image/png;base64,${BitmapUtils.bitmapToBase64(bitmap)}"
   }
 
 }

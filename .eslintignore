@@ -1,0 +1,11 @@
+/src/__tests__
+/node_modules
+/ios
+/android
+babel.config.js
+.eslintrc.js
+example/metro.config.js
+example/babel.config.js
+tsconfig.json
+lib
+scripts

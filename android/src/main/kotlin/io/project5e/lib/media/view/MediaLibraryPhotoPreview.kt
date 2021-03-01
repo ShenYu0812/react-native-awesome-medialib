@@ -10,17 +10,18 @@ import io.project5e.lib.media.R
 import io.project5e.lib.media.model.GalleryViewModel
 import io.project5e.lib.media.adapter.PhotoPreviewPagerAdapter
 import io.project5e.lib.media.adapter.SelectedAdapter
+import io.project5e.lib.media.utils.ViewModelProviders.getViewModel
 import io.project5e.lib.media.react.MediaLibraryPhotoPreviewManager.Companion.ON_FINISH_SELECT
 import io.project5e.lib.media.react.MediaLibraryPhotoPreviewManager.Companion.ON_SHOW_TOAST
 import io.project5e.lib.media.react.MediaLibraryPhotoPreviewManager.Companion.desc
-import io.project5e.lib.media.utils.NavigationEmitter.receiveEvent
-import io.project5e.lib.media.utils.ViewModelProviders
+import io.project5e.lib.media.react.EventEmitter
+import kotlinx.android.synthetic.main.view_media_lib.view.*
 import kotlinx.android.synthetic.main.view_media_preview.view.*
-import java.lang.ref.WeakReference
 
 @Suppress("ViewConstructor", "COMPATIBILITY_WARNING")
 class MediaLibraryPhotoPreview constructor(
-  themedReactContext: ThemedReactContext
+  themedReactContext: ThemedReactContext,
+  private val navigationEmitter: EventEmitter
 ) : BaseComponentView(themedReactContext), LifecycleOwner, ViewPager.OnPageChangeListener,
   SelectedAdapter.OnItemClickListener {
 
@@ -39,8 +40,7 @@ class MediaLibraryPhotoPreview constructor(
 
   init {
     registry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    val ownerWr = WeakReference(themedReactContext.currentActivity as? ViewModelStoreOwner)
-    model = ownerWr.get()?.let { ViewModelProviders.of(it).get(GalleryViewModel::class.java) }
+    model = getViewModel(themedReactContext, GalleryViewModel::class.java)
     View.inflate(context, R.layout.view_media_preview, this)
     vp_preview.adapter = previewAdapter
     vp_preview.addOnPageChangeListener(this@MediaLibraryPhotoPreview)
@@ -108,14 +108,14 @@ class MediaLibraryPhotoPreview constructor(
 
   private fun showToast() {
     val map = Arguments.createMap().apply { putString(desc, numberLimit()) }
-    receiveEvent(id, ON_SHOW_TOAST, map)
+    navigationEmitter.receiveEvent(id, ON_SHOW_TOAST, map)
   }
 
   private fun numberLimit(): String =
     context.resources.getString(R.string.number_limit, model?.getSelectLimit())
 
   private fun onNextStep() {
-    receiveEvent(id, ON_FINISH_SELECT, null)
+    navigationEmitter.receiveEvent(id, ON_FINISH_SELECT, null)
   }
 
   private fun markSelectedState(position: Int) {

@@ -3,6 +3,7 @@ package io.project5e.lib.media.model
 import androidx.lifecycle.*
 import android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
 import android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO
+import android.util.Log
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.WritableArray
@@ -24,7 +25,7 @@ class GalleryViewModel : ViewModel() {
   private val currentBucketId: MutableLiveData<Long> = MutableLiveData()
   val selectLimit: MutableLiveData<Int> = MutableLiveData()
 
-  val notifyGalleryUpdate: MutableLiveData<LocalMedia?> = MutableLiveData()
+  val notifyGalleryUpdate: MutableLiveData<LocalMedia?> = MutableLiveData(null)
   val shouldShowList: MediatorLiveData<List<LocalMedia>> = MediatorLiveData()
   val selectedList = Transformations.map(allMediaList) { list ->
     list?.filter { it.checked }?.sortedBy { it.order }
@@ -75,6 +76,7 @@ class GalleryViewModel : ViewModel() {
   }
 
   fun notifyGalleryChanged(added: LocalMedia?) = uiScope.launch {
+    Log.e("find_bugs", "notifyGalleryChanged update:$added")
     notifyGalleryUpdate.value = added
   }
 
@@ -158,6 +160,7 @@ class GalleryViewModel : ViewModel() {
     savedSelected.clear()
     fromCamera.clear()
     changeAlbum.postValue(false)
+    Log.e("find_bugs", "clearViewModel update to null")
     notifyGalleryUpdate.postValue(null)
     selectLimit.postValue(null)
     allMediaHadGot = false
@@ -231,12 +234,15 @@ class GalleryViewModel : ViewModel() {
     }
     selectLimit.value?.let { s ->
       val size = savedSelected.size
+      Log.d("find_bugs", "restoreSelectedStatus: save size=$size, s=$s")
       if (size >= s) origin.filter { !it.checked }.forEach { it.enable = false }
       val before = getSelectedCount()
       val order0 = if (before < s) before + 1 else null
-      origin[0].apply { enable = before < s }.apply { checked = enable }
+      Log.d("find_bugs", "restoreSelectedStatus: before:$before, order0=$order0")
+      origin[0].apply { enable = before < s }.apply { checked = before < s }
         .apply { order = order0 }
       val after = order0 ?: before
+      Log.d("find_bugs", "restoreSelectedStatus: after:$after")
       if (after < s) return@let
       origin.filter { !it.checked }.forEach { it.enable = false }
     }
