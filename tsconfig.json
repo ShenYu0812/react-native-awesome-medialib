@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "react-native-awesome-medialib": ["./src/index"]
+      "react-native-awesome-medialib": ["./src/index", "./lib/commonjs/index.js", "./lib/typescript/index.d.ts"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
@@ -24,7 +24,10 @@
     "importHelpers": true,
     "allowJs": true,
     "strict": true,
-    "target": "esnext"
+    "target": "esnext",
+    "outDir": "lib/commonjs",
+    "declaration": true,
+    "declarationDir": "lib/typescript"
   },
   "exclude": ["node_modules", "example", "src/__tests__"],
   "include": ["src"]
