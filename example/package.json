@@ -12,7 +12,6 @@
     "@types/react-native-video": "^5.0.1",
     "react": "16.13.1",
     "react-native": "0.63.4",
-    "react-native-awesome-medialib": "file:../../react-native-awesome-medialib",
     "react-native-awesome-navigation": "^0.0.1",
     "react-native-fast-image": "^8.3.4",
     "react-native-gesture-handler": "^1.6.0",
