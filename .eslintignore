@@ -10,3 +10,7 @@ example/babel.config.js
 tsconfig.json
 lib
 scripts
+
+/src/*.js
+/src/*/*.js
+/src/*/*/*.js
