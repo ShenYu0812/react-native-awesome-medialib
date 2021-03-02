@@ -9,7 +9,7 @@
     "esModuleInterop": true,
     "importsNotUsedAsValues": "error",
     "forceConsistentCasingInFileNames": true,
-    "jsx": "react",
+    "jsx": "react-native",
     "lib": ["esnext"],
     "module": "esnext",
     "moduleResolution": "node",
@@ -24,6 +24,9 @@
     "importHelpers": true,
     "allowJs": true,
     "strict": true,
-    "target": "esnext"
-  }
+    "target": "esnext",
+    "outDir": "lib"
+  },
+  "exclude": ["node_modules", "example", "src/__tests__"],
+  "include": ["src"]
 }

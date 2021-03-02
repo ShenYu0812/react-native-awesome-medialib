@@ -16,7 +16,6 @@ interface Props extends NavigationProps {
 }
 
 export const VideoPreviewPage = (props: Props) => {
-  console.warn(`video preview page:${JSON.stringify(props)}`)
   const [progress, setProgress] = useState(0)
   const [compressing, setCompressing] = useState(false)
   const onCompress = async () => {

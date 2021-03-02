@@ -194,7 +194,7 @@ export const MediaLibraryPage = (props: Props) => {
     try {
       const res = await finishSelectMedia()
       if (props.from === SourceType.main) {
-        props.navigator.push('SnackDetailEditorPage', {medias: res})
+        // props.navigator.push('SnackDetailEditorPage', {medias: res})
       } else if (props.from === SourceType.editor) {
         props.navigator.setResult({medias: res})
         props.navigator.dismiss()
