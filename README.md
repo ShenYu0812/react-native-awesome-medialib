@@ -49,7 +49,25 @@ import {registing} from '...'
 
 registing()
 ```
-### 3. Last, Enjoy it!
+### 3. then, navigate to 'MediaSelectorPage' in ur media library entrance. 
+```typescript
+// some place
+const onPress() = () => {
+  // react-native-awesome-navigation (u should refer to their documentation!)
+  props.navigator.push('MediaSelectorPage')
+  // react-navigation and others (u should refer to their documentation!)
+  navigation.push...
+}
+
+return (
+  <>
+    ...
+    <SomeView onPress={onPress} ...>...</SomeView>
+    ...
+  </>
+)
+```
+### 4. Last, Enjoy it!
 <br/>
 ## Contributing
 
