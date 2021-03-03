@@ -14,8 +14,8 @@ yarn add react-native-awesome-medialib
 ```
 
 ## Usage
-# 1. First, ensure `react-native-awesome-medialib`, `react-native-awesome-navigation` have been installed.
-# 2. Second, use {#Register.registerComponent} make all page had been registed. 
+### 1. First, ensure `react-native-awesome-medialib`, `react-native-awesome-navigation` have been installed.
+### 2. Second, use {#Register.registerComponent} make all page had been registed. 
   u also can use other navigation lib such as `react-navigation`, and register by it. but we recommond use `react-native-awesome-navigation`, because media lib internal page's navigate is used it.
 
 ```typescript
@@ -49,7 +49,7 @@ import {registing} from '...'
 
 registing()
 ```
-# 3. Last, Enjoy it!
+### 3. Last, Enjoy it!
 <br/>
 ## Contributing
 

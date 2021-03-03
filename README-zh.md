@@ -13,9 +13,9 @@ yarn add react-native-awesome-medialib
 [github链接]:(https://github.com/Project5E/react-native-awesome-navigation) 
 ```
 
-## 实用方法
-# 1. 首先，确保`react-native-awesome-medialib`, `react-native-awesome-navigation` 都被安装。
-# 2. 其次，使用{#Register.registerComponent} 让如下所有页面被注册, 在媒体选择器入口页面或者按钮使用导航方法进入MediaSelectorPage
+## 使用方法
+### 1. 首先，确保`react-native-awesome-medialib`, `react-native-awesome-navigation` 都被安装。
+### 2. 其次，使用{#Register.registerComponent} 让如下所有页面被注册, 在媒体选择器入口页面或者按钮使用导航方法进入MediaSelectorPage
   当然，使用诸如`react-navigation`等其他导航库是允许的，按照您使用的导航库的使用方式导航进入MediaSelectorPage页面。但是，我们推荐使用`react-native-awesome-navigation`，即使使用其他导航库，`react-native-awesome-navigation`也需要被安装，因为我们的内部页面跳转是由其实现的。
 
 ```typescript
@@ -49,7 +49,7 @@ import {registing} from '...'
 
 registing()
 ```
-# 3. 最后，享受吧
+### 3. 最后，享受吧
 <br/>
 
 ## 贡献者
