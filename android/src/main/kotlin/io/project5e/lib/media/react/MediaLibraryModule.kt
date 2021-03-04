@@ -1,5 +1,6 @@
 package io.project5e.lib.media.react
 
+import android.util.Log
 import com.facebook.react.bridge.*
 import io.project5e.lib.media.model.GalleryViewModel
 import io.project5e.lib.media.utils.ViewModelProviders.getViewModel
@@ -62,7 +63,7 @@ class MediaLibraryModule(
   fun finishSelectMedia(promise: Promise) {
     val model = getViewModel(reactContext, GalleryViewModel::class.java)
     model ?: return promise.reject("unknown error:cannot get view model!")
-    val selectedItems = model.getAllSelectedItem()
+    val selectedItems = model.getAllSelected()
     val data =
       Arguments.createArray().also { selectedItems?.forEach { m -> it.pushMap(m.toMap()) } }
     return promise.resolve(data)
@@ -79,6 +80,15 @@ class MediaLibraryModule(
   fun onSelectAlbumAtIndex(index: Int) {
     val model = getViewModel(reactContext, GalleryViewModel::class.java)
     model?.updateSelectedAlbum(index)
+  }
+
+  @ReactMethod
+  fun onNextStepPress(promise: Promise) {
+    val model = getViewModel(reactContext, GalleryViewModel::class.java)
+    Log.i("find_bugs", "invoke onNextStepPress, model:$model")
+    model?.updateNextStepState(true)
+    model?.updateNextStepState(false)
+    promise.resolve("notified native to next step.")
   }
 
 }

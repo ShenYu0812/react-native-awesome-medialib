@@ -29,6 +29,7 @@ import {
   onSelectAlbumAtIndex,
   finishSelectMedia,
   fetchVideoURL,
+  onNextStepPress,
 } from '../bridge/MediaLibraryBridge'
 import {black1A, white, black} from '../utils/Colors'
 import {requestSinglePermission} from '../utils/PermissionChecker'
@@ -190,20 +191,16 @@ export const MediaLibraryPage = (props: Props) => {
   )
 
   const onFinishSelect = async () => {
+    onNextStepPress()
     setShowProgressHUD(true)
     try {
       const res = await finishSelectMedia()
-      if (props.from === SourceType.main) {
-        // props.navigator.push('SnackDetailEditorPage', {medias: res})
-      } else if (props.from === SourceType.editor) {
-        props.navigator.setResult({medias: res})
-        props.navigator.dismiss()
-      } else if (props.from === SourceType.avatar) {
-        const photo = res[0]
-        props.navigator.push('PhotoCropperPage', {
-          url: photo.url,
-          scale: photo.height / photo.width,
-        })
+      if (props.from === SourceType.avatar) {
+        // const photo = res[0]
+        // props.navigator.push('PhotoCropperPage', {
+        //   url: photo.url,
+        //   scale: photo.height / photo.width,
+        // })
       } else {
         props.navigator.setResult({medias: res})
         props.navigator.dismiss()

@@ -19,6 +19,7 @@ export const registing = async () => {
   Register.registerComponent('MediaLibraryPage', MediaLibraryPage)
   Register.registerComponent('VideoPreviewPage', VideoPreviewPage)
   Register.registerComponent('MediaLibraryPhotoPreviewPage', MediaLibraryPhotoPreviewPage)
+  // Register.registerComponent('PhotoCropperPage', PhotoCropperPage)
 
   console.warn(`invoke register set root:`)
   Register.setRoot({

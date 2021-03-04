@@ -4,52 +4,46 @@ import type {NavigationProps} from 'react-native-awesome-navigation'
 import Video from 'react-native-video'
 import {isIphoneX} from 'react-native-iphone-x-helper'
 import CameraNavigationBar from '../components/basic/CameraHeader'
-import ProgressHUD from '../components/basic/ProgressHUD'
 import {black, white} from '../utils/Colors'
 import {showToast} from '../utils/Utils'
-// import {compressVideo} from '../bridge/MediaLibraryBridge'
 import {windowWidth} from '../components/video_player/styles'
+import {finishSelectMedia, onNextStepPress} from '../bridge/MediaLibraryBridge'
 
 interface Props extends NavigationProps {
+  id: number
   url: string
   scale: number
 }
 
 export const VideoPreviewPage = (props: Props) => {
   const [progress, setProgress] = useState(0)
-  const [compressing, setCompressing] = useState(false)
   const onCompress = async () => {
     try {
-      setCompressing(true)
-      // const resp = await compressVideo(props.url)
-      // TODO
-      // props.navigator.push('SnackDetailEditorPage', {medias: resp})
-    } catch (e) {
-      showToast('上传失败')
-    } finally {
-      setCompressing(false)
+      onNextStepPress()
+      const res = await finishSelectMedia()
+      props.navigator.setResult({medias: res})
+      props.navigator.dismiss()
+    } catch (error) {
+      showToast('导出失败')
     }
   }
   return (
-    <>
-      <View style={styles.container}>
-        <StatusBar backgroundColor={black} barStyle="light-content" />
-        <CameraNavigationBar onPress={() => props.navigator.pop()} />
-        <View style={[styles.progressBar, {width: windowWidth * progress}]} />
-        <Video
-          onProgress={data => setProgress(data.currentTime / data.seekableDuration)}
-          resizeMode="contain"
-          source={{uri: props.url}}
-          style={{flex: 1}}
-        />
-        <View style={styles.bottomContainer}>
-          <TouchableOpacity onPress={onCompress} style={styles.buttonIcon}>
-            <Text style={{color: white, fontSize: 18}}>下一步</Text>
-          </TouchableOpacity>
-        </View>
+    <View style={styles.container}>
+      <StatusBar backgroundColor={black} barStyle="light-content" />
+      <CameraNavigationBar onPress={() => props.navigator.pop()} />
+      <View style={[styles.progressBar, {width: windowWidth * progress}]} />
+      <Video
+        onProgress={data => setProgress(data.currentTime / data.seekableDuration)}
+        resizeMode="contain"
+        source={{uri: props.url}}
+        style={{flex: 1}}
+      />
+      <View style={styles.bottomContainer}>
+        <TouchableOpacity onPress={onCompress} style={styles.buttonIcon}>
+          <Text style={{color: white, fontSize: 18}}>下一步</Text>
+        </TouchableOpacity>
       </View>
-      {compressing ? <ProgressHUD /> : null}
-    </>
+    </View>
   )
 }
 

@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">AwesomeMediLib Example</string>
+    <string name="app_name">AwesomeMediaLib Example</string>
+    <string name="result">result:%s</string>
 </resources>

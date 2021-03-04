@@ -77,7 +77,7 @@ class NativeMediaLibraryView constructor(
       rvAdapter.haveHeader = !model.isVideo()
       showList.clear()
       showList.addAll(list)
-      onItemSelected(model.getSelectedCount())
+      onItemSelected(model.getSelectedImageCount())
       when (model.currentUpdateType) {
         UPDATE_SPECIAL_PART -> rvAdapter.updateDataSpecial()
         UPDATE_PART -> rvAdapter.updateDataPartial(showList)
@@ -98,7 +98,7 @@ class NativeMediaLibraryView constructor(
           .also { it.putArray(newAlbums, model.fetchAlbum(true, add)) }
         navigationEmitter.receiveEvent(id, ON_ALBUM_UPDATE, bundle)
       }
-      if (model.getSelectedCount() >= model.selectLimit.value ?: 9) showToast(toastNumLimit)
+      if (model.getSelectedImageCount() >= model.selectLimit.value ?: 9) showToast(toastNumLimit)
     }
     model.sourceAdded.observe(this@NativeMediaLibraryView) {
       if (it != false) return@observe

@@ -9,7 +9,7 @@ import com.facebook.react.bridge.ReactContext
 
 object ViewModelProviders {
 
-  private fun of(@NonNull owner: ViewModelStoreOwner): ViewModelProvider {
+  fun of(@NonNull owner: ViewModelStoreOwner): ViewModelProvider {
     return ViewModelProvider(owner, ViewModelProvider.AndroidViewModelFactory.getInstance(Utils.getApp()))
   }
 

@@ -31,6 +31,7 @@ class GalleryViewModel : ViewModel() {
     list?.filter { it.checked }?.sortedBy { it.order }
   }
   var changeAlbum: MutableLiveData<Boolean> = MutableLiveData(false)
+  val nextStep: MutableLiveData<Boolean?> = MutableLiveData()
   var previewPosition: Int? = null
 
   private var mediaType: Int? = null
@@ -108,17 +109,17 @@ class GalleryViewModel : ViewModel() {
 
   fun updateSelectItem(position: Int, isChecked: Boolean, isOtherPage: Boolean = false) {
     val sLimit = getSelectLimit()
-    val before = getSelectedCount()
+    val before = getSelectedImageCount()
     if (!isChecked && before <= 0 || isChecked && before >= sLimit) return
     shouldShowList.value?.let { list ->
       val item = list[position]
       changeFromCamera(isChecked, item)
       item.checked = isChecked
       item.order = if (isChecked) sLimit else null
-      val allSelected = getAllSelectedItem()
+      val allSelected = getAllSelectedImage()
       allSelected?.sortedBy { it.order }
         ?.forEach { t -> list.find { t._id == it._id }?.apply { order = t.order } }
-      val after = getSelectedCount()
+      val after = getSelectedImageCount()
       val cannotSelect = after == sLimit
       val canReselect = after == sLimit - 1 && !isChecked
       if (cannotSelect) {
@@ -146,12 +147,18 @@ class GalleryViewModel : ViewModel() {
   fun getSelectLimit(): Int =
     selectLimit.value ?: if (isVideo()) videoSelectLimit else photoSelectLimit
 
-  fun getSelectedCount(): Int =
+  fun getSelectedImageCount(): Int =
     allMediaList.let { it.value?.filter { m -> m.checked }?.size } ?: 0
 
-  fun getAllSelectedItem(): List<LocalMedia>? =
+  fun getAllSelectedImage(): List<LocalMedia>? =
     allMediaList.value?.asSequence()?.filter { m -> m.checked }?.onEach { j -> j.enable = true }
       ?.sortedBy { t -> t.order }?.onEachIndexed { i, k -> k.order = i + 1 }?.toList()
+
+  fun getAllSelected(): List<LocalMedia>? {
+    if (!isVideo()) return getAllSelectedImage()
+    val tar = previewPosition?.let { shouldShowList.value?.get(it) } ?: run { return null }
+    return listOf(tar)
+  }
 
   fun updateSelectedAlbum(index: Int) = uiScope.launch {
     if (albumList.size <= 0) return@launch
@@ -170,6 +177,7 @@ class GalleryViewModel : ViewModel() {
     savedSelected.clear()
     fromCamera.clear()
     changeAlbum.postValue(false)
+    nextStep.postValue(null)
     Log.e("find_bugs", "clearViewModel update to null")
     notifyGalleryUpdate.postValue(null)
     selectLimit.postValue(null)
@@ -223,7 +231,7 @@ class GalleryViewModel : ViewModel() {
   private val fromCamera: MutableList<LocalMedia> = mutableListOf()
   private fun tempSaveSelectedList() {
     savedSelected.clear()
-    val allSelected = getAllSelectedItem()
+    val allSelected = getAllSelectedImage()
     Log.d("find_bugs", "temp save: allSelected:$allSelected")
     allSelected?.let { savedSelected.addAll(it) }
     val iterator = fromCamera.iterator()
@@ -264,7 +272,7 @@ class GalleryViewModel : ViewModel() {
       val size = savedSelected.size
       Log.d("find_bugs", "restoreSelectedStatus: save size=$size, s=$s")
       if (size >= s) origin.filter { !it.checked }.forEach { it.enable = false }
-      val before = getSelectedCount()
+      val before = getSelectedImageCount()
       val order0 = if (before < s) before + 1 else null
       Log.d("find_bugs", "restoreSelectedStatus: before:$before, order0=$order0")
       origin[0].apply { enable = before < s }.apply { checked = before < s }
@@ -286,13 +294,17 @@ class GalleryViewModel : ViewModel() {
     previewPosition?.let { p ->
       shouldShowList.value?.let {
         if (p < 0 || p >= it.size) promise.reject("index out of bounds!")
-        promise.resolve(it[p].toMapVideoPreview())
+        promise.resolve(it[p].toMap())
       } ?: promise.reject("haven't got show list!")
     } ?: promise.reject("haven't got click position!")
   }
 
   fun updateSelectLimit(limit: Int) = uiScope.launch {
     selectLimit.value = limit
+  }
+
+  fun updateNextStepState(state: Boolean) = uiScope.launch {
+    nextStep.value = state
   }
 
   override fun onCleared() {

@@ -16,15 +16,4 @@ export const clear: () => void = MediaLibrarayModule.clear
 export const finishSelectMedia: () => Promise<any> = MediaLibrarayModule.finishSelectMedia
 export const fetchVideoURL: () => Promise<any> = MediaLibrarayModule.fetchVideoURL
 export const onSelectAlbumAtIndex: (index: any) => void = MediaLibrarayModule.onSelectAlbumAtIndex
-
-// 压缩视频
-export interface NativeMediaModel {
-  key: string // 表唯一
-  type: string // image or video
-  width: number
-  height: number
-  url: string
-}
-
-export const compressVideo: (url: string) => Promise<NativeMediaModel> =
-  MediaLibrarayModule.compressVideo
+export const onNextStepPress: () => Promise<any> = MediaLibrarayModule.onNextStepPress

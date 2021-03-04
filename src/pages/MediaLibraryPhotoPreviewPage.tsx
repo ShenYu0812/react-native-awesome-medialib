@@ -5,7 +5,7 @@ import {RootSiblingParent} from 'react-native-root-siblings'
 import type {NavigationProps} from 'react-native-awesome-navigation'
 import ProgressHUD from '../components/basic/ProgressHUD'
 import {MediaLibraryPhotoPreview} from '../components/NativeMediaLibraryPhotoPreview'
-import {finishSelectMedia} from '../bridge/MediaLibraryBridge'
+import {finishSelectMedia, onNextStepPress} from '../bridge/MediaLibraryBridge'
 import BackArrow from '../images/back_arrow_white.png'
 import {black, white} from '../utils/Colors'
 import {showToast} from '../utils/Utils'
@@ -19,21 +19,18 @@ export const MediaLibraryPhotoPreviewPage = (props: Props) => {
   const [showProgressHUD, setShowProgressHUD] = useState<boolean>(false)
 
   const onFinishSelect = async () => {
+    onNextStepPress()
     setShowProgressHUD(true)
     try {
       const res = await finishSelectMedia()
-      props.navigator.setResult({medias: res})
-      if (props.from === SourceType.main) {
-        props.navigator.push('SnackDetailEditorPage', {medias: res})
-      } else if (props.from === SourceType.editor) {
-        props.navigator.dismiss()
-      } else if (props.from === SourceType.avatar) {
-        const photo = res[0]
-        props.navigator.push('PhotoCropperPage', {
-          url: photo.url,
-          scale: photo.height / photo.width,
-        })
+      if (props.from === SourceType.avatar) {
+        // const photo = res[0]
+        // props.navigator.push('PhotoCropperPage', {
+        //   url: photo.url,
+        //   scale: photo.height / photo.width,
+        // })
       } else {
+        props.navigator.setResult({medias: res})
         props.navigator.dismiss()
       }
     } catch (error) {
