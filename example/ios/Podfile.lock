@@ -76,6 +76,7 @@ PODS:
   - libwebp/mux (1.2.0):
     - libwebp/demux
   - libwebp/webp (1.2.0)
+  - Masonry (1.1.0)
   - OpenSSL-Universal (1.0.2.20):
     - OpenSSL-Universal/Static (= 1.0.2.20)
   - OpenSSL-Universal/Static (1.0.2.20)
@@ -246,6 +247,7 @@ PODS:
     - React-jsi (= 0.63.4)
   - React-jsinspector (0.63.4)
   - react-native-awesome-medialib (0.0.1):
+    - Masonry
     - React-Core
   - react-native-awesome-navigation (0.0.1):
     - React
@@ -397,6 +399,7 @@ SPEC REPOS:
     - Flipper-RSocket
     - FlipperKit
     - libwebp
+    - Masonry
     - OpenSSL-Universal
     - SDWebImage
     - SDWebImageWebPCoder
@@ -483,6 +486,7 @@ SPEC CHECKSUMS:
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   libwebp: e90b9c01d99205d03b6bb8f2c8c415e5a4ef66f0
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   OpenSSL-Universal: ff34003318d5e1163e9529b08470708e389ffcdd
   RCTRequired: 082f10cd3f905d6c124597fd1c14f6f2655ff65e
   RCTTypeSafety: 8c9c544ecbf20337d069e4ae7fd9a377aadf504b
@@ -494,7 +498,7 @@ SPEC CHECKSUMS:
   React-jsi: a0418934cf48f25b485631deb27c64dc40fb4c31
   React-jsiexecutor: 93bd528844ad21dc07aab1c67cb10abae6df6949
   React-jsinspector: 58aef7155bc9a9683f5b60b35eccea8722a4f53a
-  react-native-awesome-medialib: abd40939d808a9b195e6317e3f61ba98dedf3a87
+  react-native-awesome-medialib: 9878d5df8f068116346b48e55c6adad08864c7f0
   react-native-awesome-navigation: 63f5a03a79efe0f05d069fa321340c6c25efb2af
   react-native-video: eee541262ada11bc7ffe8ec5508e6a877937c462
   React-RCTActionSheet: 89a0ca9f4a06c1f93c26067af074ccdce0f40336
@@ -514,6 +518,6 @@ SPEC CHECKSUMS:
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 42def756af50cd76eb3ec5a60abe52671ada1ff9
+PODFILE CHECKSUM: 832a849205cdce7ea98ed51059e07a85a7daa530
 
 COCOAPODS: 1.10.0
