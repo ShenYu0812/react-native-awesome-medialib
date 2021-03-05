@@ -3594,14 +3594,9 @@ react-is@^16.12.0, react-is@^16.7.0, react-is@^16.8.1, react-is@^16.8.4:
     react-native-root-toast "^3.2.0"
     react-native-video "^4.4.5"
 
-react-native-awesome-navigation@^0.0.1:
-  version "0.0.1"
-  resolved "http://dev.moumoux.com:9088/react-native-awesome-navigation/-/react-native-awesome-navigation-0.0.1.tgz#ec06f58b70a16d399102f898edcb28b3ff299cee"
-  integrity sha512-+HDq3uqJYvUQxNsMz/Q3U+tkeNzpzOC1bd0usab2uOkOhDKot6JdDUDA1kx6HoZMliOW3WmdWgZ9W5s9Kkn7Ug==
-
 react-native-awesome-navigation@^0.1.1-beta:
   version "0.1.1-beta"
-  resolved "https://registry.npm.taobao.org/react-native-awesome-navigation/download/react-native-awesome-navigation-0.1.1-beta.tgz#b9659c5e2e17bca88cf54ac51e8395105ddb5d2b"
+  resolved "http://dev.moumoux.com:9088/react-native-awesome-navigation/-/react-native-awesome-navigation-0.1.1-beta.tgz#b9659c5e2e17bca88cf54ac51e8395105ddb5d2b"
   integrity sha1-uWWcXi4XvKiM9UrFHoOVEF3bXSs=
 
 react-native-fast-image@^8.3.4:

@@ -13,7 +13,7 @@
     "react": "16.13.1",
     "react-native": "0.63.4",
     "react-native-awesome-medialib": "file:../../react-native-awesome-medialib",
-    "react-native-awesome-navigation": "^0.0.1",
+    "react-native-awesome-navigation": "^0.1.1-beta",
     "react-native-fast-image": "^8.3.4",
     "react-native-gesture-handler": "^1.6.0",
     "react-native-iphone-x-helper": "^1.3.0",
