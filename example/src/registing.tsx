@@ -8,6 +8,7 @@ import {
   VideoPreviewPage,
 } from 'react-native-awesome-medialib'
 import {Home} from './Home'
+import {ResultPage} from './ResultPage'
 
 export const registing = async () => {
   Register.beforeRegister()
@@ -20,6 +21,7 @@ export const registing = async () => {
   Register.registerComponent('VideoPreviewPage', VideoPreviewPage)
   Register.registerComponent('MediaLibraryPhotoPreviewPage', MediaLibraryPhotoPreviewPage)
   // Register.registerComponent('PhotoCropperPage', PhotoCropperPage)
+  Register.registerComponent('ResultPage', ResultPage)
 
   console.warn(`invoke register set root:`)
   Register.setRoot({

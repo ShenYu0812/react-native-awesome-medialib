@@ -28,7 +28,7 @@ class MainActivity : RnRootActivity() {
       val temp: ArrayList<LocalMedia> = arrayListOf()
       temp.addAll(allSelected)
       intent.putExtra("allSelected", temp)
-      startActivity(intent)
+      // startActivity(intent)
     }
   }
 

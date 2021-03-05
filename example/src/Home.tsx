@@ -1,12 +1,24 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {View, Text, TouchableOpacity, StyleSheet, Dimensions} from 'react-native'
-import type {NavigationProps} from 'react-native-awesome-navigation'
-import {SourceType} from 'react-native-awesome-medialib'
+import {InvokeType, rxEventBus, OnNextStepNotification} from 'react-native-awesome-medialib'
+import {NavigationProps} from 'react-native-awesome-navigation'
 
 const windowWidth = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 
 export const Home = (props: NavigationProps) => {
+
+  useEffect(() => {
+    const subs = rxEventBus.listen(OnNextStepNotification).subscribe(value => {
+      console.warn(`i have received message:${JSON.stringify(value)}`)
+      console.warn(`navigator:${JSON.stringify(props)}`)
+      props.navigator.push('ResultPage', value)
+    })
+    return () => {
+      subs.unsubscribe()
+    }
+  }, [props])
+
   const onPress = async () => {
     const resp = await props.navigator.present(
       'MediaSelectorPage',
@@ -21,13 +33,13 @@ export const Home = (props: NavigationProps) => {
       params = {
         maxSelectedMediaCount: 1,
         isVideoOnly: true,
-        from: SourceType.main,
+        from: InvokeType.main,
       }
     } else {
       params = {
         maxSelectedMediaCount: 9,
         isVideoOnly: false,
-        from: SourceType.main,
+        from: InvokeType.main,
       }
     }
     props.navigator.present('MediaLibraryPage', params, {

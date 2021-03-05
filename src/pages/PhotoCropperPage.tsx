@@ -16,6 +16,7 @@ import CameraNavigationBar from '../components/basic/CameraHeader'
 import type {ImageResult} from '../components/NativeCamera'
 import {cropPhotoToSquare} from '../bridge/NativeCameraBridge'
 import {windowWidth} from '../components/video_player/styles'
+import {OnNextStepNotification, UploadAvatarFailNotification, rxEventBus} from '../utils/RxEventBus'
 
 interface Props extends NavigationProps {
   url: string
@@ -59,11 +60,10 @@ export const PhotoCropperPage = (props: Props) => {
   const uploadAvatar = async () => {
     try {
       const result: ImageResult = await cropPhotoToSquare(props.url, point.x, point.y, width)
-      props.navigator.setResult(result)
       await props.navigator.dismiss()
-      // props.navigator.push('PhotoPreviewPage', {...result, scale: 1})
+      rxEventBus.sendWithValue(OnNextStepNotification, {dataList: [result]})
     } catch (e) {
-      // rxEventBus.send(UploadAvatarFailNotification)
+      rxEventBus.send(UploadAvatarFailNotification)
     }
   }
 

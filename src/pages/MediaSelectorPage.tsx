@@ -2,7 +2,6 @@ import React from 'react'
 import {TouchableOpacity, Text, Dimensions, StyleSheet, StatusBar, View} from 'react-native'
 import {black333, white, black} from '../utils/Colors'
 import type {BaseProps} from '../utils/Utils'
-// /Users/shenyu/projects/my-npm/react-native-awesome-medialib/src/utils/Utils.ts
 
 // const windowWidth = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height

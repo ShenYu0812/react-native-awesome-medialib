@@ -9,10 +9,11 @@ import {finishSelectMedia, onNextStepPress} from '../bridge/MediaLibraryBridge'
 import BackArrow from '../images/back_arrow_white.png'
 import {black, white} from '../utils/Colors'
 import {showToast} from '../utils/Utils'
-import {SourceType} from './MediaLibraryPage'
+import type {InvokeType} from '../utils/ResultModel'
+import {rxEventBus, OnNextStepNotification} from '../utils/RxEventBus'
 
 interface Props extends NavigationProps {
-  from: SourceType
+  from: InvokeType
 }
 
 export const MediaLibraryPhotoPreviewPage = (props: Props) => {
@@ -23,16 +24,8 @@ export const MediaLibraryPhotoPreviewPage = (props: Props) => {
     setShowProgressHUD(true)
     try {
       const res = await finishSelectMedia()
-      if (props.from === SourceType.avatar) {
-        // const photo = res[0]
-        // props.navigator.push('PhotoCropperPage', {
-        //   url: photo.url,
-        //   scale: photo.height / photo.width,
-        // })
-      } else {
-        props.navigator.setResult({medias: res})
-        props.navigator.dismiss()
-      }
+      await props.navigator.dismiss()
+      rxEventBus.sendWithValue(OnNextStepNotification, {dataList: res, from: props.from})
     } catch (error) {
       onShowToast('导出失败')
     } finally {

@@ -7,7 +7,8 @@ import CameraNavigationBar from '../components/basic/CameraHeader'
 import {black, white} from '../utils/Colors'
 import {showToast} from '../utils/Utils'
 import {windowWidth} from '../components/video_player/styles'
-import {finishSelectMedia, onNextStepPress} from '../bridge/MediaLibraryBridge'
+import {onNextStepPress} from '../bridge/MediaLibraryBridge'
+import {OnNextStepNotification, rxEventBus} from '../utils/RxEventBus'
 
 interface Props extends NavigationProps {
   id: number
@@ -20,9 +21,10 @@ export const VideoPreviewPage = (props: Props) => {
   const onCompress = async () => {
     try {
       onNextStepPress()
-      const res = await finishSelectMedia()
-      props.navigator.setResult({medias: res})
-      props.navigator.dismiss()
+      await props.navigator.dismiss()
+      rxEventBus.sendWithValue(OnNextStepNotification, {
+        dataList: [{id: props.id, url: props.url, scale: props.scale}],
+      })
     } catch (error) {
       showToast('导出失败')
     }

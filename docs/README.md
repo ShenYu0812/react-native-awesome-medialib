@@ -10,7 +10,7 @@ npm install react-native-awesome-medialib
 yarn add react-native-awesome-medialib
 
 ```u should install react-native-awesome-navigation concurrently.```
-[github link]:(https://github.com/Project5E/react-native-navigation-5e) 
+[github link]:(https://github.com/Project5E/react-native-awesome-navigation) 
 ```
 
 ## Usage

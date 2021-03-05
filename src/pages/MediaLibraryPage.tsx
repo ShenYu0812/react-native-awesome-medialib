@@ -36,12 +36,8 @@ import {requestSinglePermission} from '../utils/PermissionChecker'
 import {albumListStyle, processAlbumModel, showToast, AlbumModel, BaseProps} from '../utils/Utils'
 import DismissButton from '../images/dismiss_white_button.png'
 import DownArrow from '../images/down_white_arrow.png'
-
-export enum SourceType {
-  main = 'main',
-  editor = 'editor',
-  avatar = 'avatar',
-}
+import {OnNextStepNotification, rxEventBus} from '../utils/RxEventBus'
+import type {InvokeType} from '../utils/ResultModel'
 
 interface Props extends BaseProps {
   // 最大选择数量
@@ -49,7 +45,7 @@ interface Props extends BaseProps {
   // 是否只展示视频
   isVideoOnly?: boolean
   // 从哪里调用
-  from: SourceType
+  from: InvokeType
 }
 
 export const MediaLibraryPage = (props: Props) => {
@@ -195,16 +191,8 @@ export const MediaLibraryPage = (props: Props) => {
     setShowProgressHUD(true)
     try {
       const res = await finishSelectMedia()
-      if (props.from === SourceType.avatar) {
-        // const photo = res[0]
-        // props.navigator.push('PhotoCropperPage', {
-        //   url: photo.url,
-        //   scale: photo.height / photo.width,
-        // })
-      } else {
-        props.navigator.setResult({medias: res})
-        props.navigator.dismiss()
-      }
+      await props.navigator.dismiss()
+      rxEventBus.sendWithValue(OnNextStepNotification, {dataList: res, from: props.from})
     } catch (error) {
       onShowToast('导出失败')
     } finally {
