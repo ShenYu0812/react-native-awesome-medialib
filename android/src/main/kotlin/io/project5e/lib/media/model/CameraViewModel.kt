@@ -42,7 +42,6 @@ class CameraViewModel : ViewModel() {
   val cameraState: MutableLiveData<TransferCamera?> = MutableLiveData()
 
   fun updateCameraState(t: TransferCamera) = uiScope.launch {
-    Log.d("find_bugs", "updateCameraState:$t")
     cameraState.value = t
   }
 
@@ -74,10 +73,6 @@ class CameraViewModel : ViewModel() {
       contentValues.put(MIME_TYPE, "image/$extensions")
       contentValues.put(RELATIVE_PATH, "$DIRECTORY_DCIM/camera")
       val target = ctx.contentResolver.insert(EXTERNAL_CONTENT_URI, contentValues)
-      Log.d(
-        "find_bugs",
-        "file name:${file.name}, date:$dateToken, mine type=$extensions, target:$target"
-      )
       target ?: promise?.reject("uri is null")
       target ?: return@launch
       withContext(Dispatchers.IO) { write(ctx, origin, target, promise) }
@@ -100,7 +95,6 @@ class CameraViewModel : ViewModel() {
       val path = getPath(ctx, target) ?: ""
       ctx.contentResolver.notifyChange(target, null)
       val model = getViewModel(ctx, GalleryViewModel::class.java)
-      Log.e("find_bugs", "invoke notifyGalleryChanged update:write method")
       model?.notifyGalleryChanged(LocalMedia().apply {
         this.uri = target
         this.name = originFile.name
@@ -149,7 +143,6 @@ class CameraViewModel : ViewModel() {
       val dateToken = SimpleDateFormat(fileFormat, Locale.getDefault())
         .parse(tFile.nameWithoutExtension)?.time ?: System.currentTimeMillis()
       val tUri = Uri.fromFile(tFile)
-      Log.e("find_bugs", "invoke notifyGalleryChanged update:savePhoto method")
       model?.notifyGalleryChanged(LocalMedia().apply {
         this.uri = tUri
         this.name = tFile.name

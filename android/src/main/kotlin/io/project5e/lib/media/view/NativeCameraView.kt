@@ -65,7 +65,6 @@ class NativeCameraView constructor(
     model ?: return
     if (allPermissionsGranted()) model.updateCameraState(TransferCamera(STATE_START))
     model.cameraState.observe(this@NativeCameraView) {
-      Log.d("find_bugs", "observe:$it")
       if (it == null) return@observe
       when (it.state) {
         STATE_START -> startCamera()
@@ -89,18 +88,14 @@ class NativeCameraView constructor(
 
   private fun startCamera() {
     registry.handleLifecycleEvent(Lifecycle.Event.ON_START)
-    Log.d("find_bugs", "startCamera:${model?.cameraState?.value}")
     val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
     cameraProviderFuture.addListener({
       try {
         val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
         val preview = Preview.Builder().build()
         preview.setSurfaceProvider(viewFinder.surfaceProvider)
-        Log.d("find_bugs", "cameraProviderFuture.addListener before init:$imageCapture")
         imageCapture = ImageCapture.Builder().build()
-        Log.d("find_bugs", "cameraProviderFuture.addListener after init:$imageCapture")
         cameraProvider.unbindAll()
-        Log.d("find_bugs", "cameraProviderFuture.addListener invoke bindToLifecycle")
         cameraProvider.bindToLifecycle(this, selector, preview, imageCapture)
       } catch (e: Exception) {
         Log.e(cTag, "Use case binding failed", e)
@@ -125,11 +120,6 @@ class NativeCameraView constructor(
     val timestamp = System.currentTimeMillis()
     val fileName = "${SimpleDateFormat(fileFormat, Locale.getDefault()).format(timestamp)}.jpg"
     val photoFile = File(outputDir, fileName)
-    Log.d("find_bugs", "write to : $outputDir, file:$fileName")
-    Log.e(
-      "find_bugs",
-      "not bound to valid camera:${imageCapture?.camera}, capture:${imageCapture}"
-    )
     val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
     imageCapture?.setCropAspectRatio(model.getRatio(isSquare))
     val callback = ImageSavedCallback(photoFile, promise)

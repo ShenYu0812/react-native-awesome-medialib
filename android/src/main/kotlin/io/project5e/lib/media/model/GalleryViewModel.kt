@@ -77,7 +77,6 @@ class GalleryViewModel : ViewModel() {
   }
 
   fun notifyGalleryChanged(added: LocalMedia?) = uiScope.launch {
-    Log.e("find_bugs", "notifyGalleryChanged update:$added")
     notifyGalleryUpdate.value = added
   }
 
@@ -178,7 +177,6 @@ class GalleryViewModel : ViewModel() {
     fromCamera.clear()
     changeAlbum.postValue(false)
     nextStep.postValue(null)
-    Log.e("find_bugs", "clearViewModel update to null")
     notifyGalleryUpdate.postValue(null)
     selectLimit.postValue(null)
     allMediaHadGot = false
@@ -210,9 +208,7 @@ class GalleryViewModel : ViewModel() {
 
   suspend fun fetchAlbum(restore: Boolean = false, added: LocalMedia? = null): WritableArray? =
     withContext(Dispatchers.Default) {
-      Log.i("find_bugs", "fetchAlbum: before add fromCamera:${fromCamera.size}")
       added?.let { fromCamera.add(added) }
-      Log.i("find_bugs", "fetchAlbum: after add fromCamera:${fromCamera.size}, added:${if (added != null) fromCamera[fromCamera.size-1] else null}")
       if (restore) tempSaveSelectedList()
       val deferredA = async { mediaManager.applyBucket(allMediaBucketId).request() }
       var allMedia = deferredA.await() ?: return@withContext null
@@ -232,19 +228,12 @@ class GalleryViewModel : ViewModel() {
   private fun tempSaveSelectedList() {
     savedSelected.clear()
     val allSelected = getAllSelectedImage()
-    Log.d("find_bugs", "temp save: allSelected:$allSelected")
     allSelected?.let { savedSelected.addAll(it) }
     val iterator = fromCamera.iterator()
-    Log.d("find_bugs", "operate before: fromCamera:$fromCamera")
     iterator.forEach { m ->
       savedSelected.find { it.name == m.name }?.let {
-        Log.d("find_bugs", "find it: it:$it")
-        Log.w("find_bugs", "find it: m:$m")
         iterator.remove()
-        Log.e("find_bugs", "find it: after: fromCamera:$fromCamera")
-        Log.i("find_bugs", "find it: after: savedSelected:$savedSelected")
       } ?: run {
-        Log.d("find_bugs", "not find it in fromCamera:add $m")
         savedSelected.add(m)
       }
     }
@@ -257,28 +246,16 @@ class GalleryViewModel : ViewModel() {
     added?.let { t -> origin.find { t.name == it.name } ?: origin.add(0, t) }
     savedSelected.iterator().forEach { m ->
       origin.find { (it._id != null && it._id == m._id) || it.name == m.name }
-        ?.apply {
-          order = m.order
-          Log.d("find_bugs", "find from origin:this:$this")
-          Log.d("find_bugs", "find from origin:   m:$m")
-        }
-        ?.apply {
-          checked = m.checked
-        }?.apply {
-          enable = m.enable
-        }
+        ?.apply { order = m.order }?.apply { checked = m.checked }?.apply { enable = m.enable }
     }
     selectLimit.value?.let { s ->
       val size = savedSelected.size
-      Log.d("find_bugs", "restoreSelectedStatus: save size=$size, s=$s")
       if (size >= s) origin.filter { !it.checked }.forEach { it.enable = false }
       val before = getSelectedImageCount()
       val order0 = if (before < s) before + 1 else null
-      Log.d("find_bugs", "restoreSelectedStatus: before:$before, order0=$order0")
       origin[0].apply { enable = before < s }.apply { checked = before < s }
         .apply { order = order0 }
       val after = order0 ?: before
-      Log.d("find_bugs", "restoreSelectedStatus: after:$after")
       if (after < s) return@let
       origin.filter { !it.checked }.forEach { it.enable = false }
     }

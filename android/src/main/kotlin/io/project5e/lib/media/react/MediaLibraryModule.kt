@@ -85,7 +85,6 @@ class MediaLibraryModule(
   @ReactMethod
   fun onNextStepPress(promise: Promise) {
     val model = getViewModel(reactContext, GalleryViewModel::class.java)
-    Log.i("find_bugs", "invoke onNextStepPress, model:$model")
     model?.updateNextStepState(true)
     model?.updateNextStepState(false)
     promise.resolve("notified native to next step.")

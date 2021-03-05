@@ -92,7 +92,6 @@ class NativeMediaLibraryView constructor(
     model.notifyGalleryUpdate.observe(this@NativeMediaLibraryView) { add ->
       if (add == null) return@observe
       uiScope.launch {
-        Log.d("find_bugs", "notifyGalleryUpdate: invoke fetchAlbum")
         val bundle = Arguments.createMap()
           .also { it.putArray(newAlbums, model.fetchAlbum(true, add)) }
         EventEmitter.receiveEvent(id, ON_ALBUM_UPDATE, bundle)

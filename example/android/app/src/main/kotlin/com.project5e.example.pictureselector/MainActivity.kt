@@ -20,9 +20,7 @@ class MainActivity : RnRootActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     val model = ViewModelProviders.of(this).get(GalleryViewModel::class.java)
-    Log.d("find_bugs", "MainActivity: onCreate: model=$model")
     model.nextStep.observe(this) {
-      Log.i("find_bugs", "MainActivity: next step observed, it:$it")
       if (it != true) return@observe
       val intent = Intent(this, NativeNextActivity::class.java)
       val allSelected = model.getAllSelected()

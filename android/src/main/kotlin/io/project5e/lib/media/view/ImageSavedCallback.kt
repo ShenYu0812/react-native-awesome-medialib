@@ -18,7 +18,6 @@ class ImageSavedCallback(
 
   override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
     val savedUri = Uri.fromFile(photoFile)
-    Log.d("find_bugs", "photo:$photoFile, uri=$savedUri")
     val dataMap = Arguments.createMap()
     dataMap.putString("url", savedUri.toString())
     promise.resolve(dataMap)
