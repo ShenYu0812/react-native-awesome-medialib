@@ -12,7 +12,6 @@ import io.project5e.lib.media.view.NativeMediaLibraryView
 @Suppress("Unused", "UNUSED_PARAMETER")
 class MediaLibraryViewManager(
   private val applicationContext: ReactApplicationContext,
-  private val navigationEmitter: EventEmitter
 ) : SimpleViewManager<NativeMediaLibraryView>() {
 
   companion object {
@@ -32,7 +31,7 @@ class MediaLibraryViewManager(
   override fun getName(): String = MEDIA_LIBRARY_VIEW
 
   override fun createViewInstance(reactContext: ThemedReactContext): NativeMediaLibraryView =
-    NativeMediaLibraryView(reactContext, applicationContext, navigationEmitter)
+    NativeMediaLibraryView(reactContext, applicationContext)
 
   @ReactProp(name = "maxSelectedMediaCount")
   fun setMaxSelectedCount(v: NativeMediaLibraryView, count: Int) {

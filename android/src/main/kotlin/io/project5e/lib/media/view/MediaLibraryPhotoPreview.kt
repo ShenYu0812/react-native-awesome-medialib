@@ -20,8 +20,7 @@ import kotlinx.android.synthetic.main.view_media_preview.view.*
 
 @Suppress("ViewConstructor", "COMPATIBILITY_WARNING")
 class MediaLibraryPhotoPreview constructor(
-  themedReactContext: ThemedReactContext,
-  private val navigationEmitter: EventEmitter
+  themedReactContext: ThemedReactContext
 ) : BaseComponentView(themedReactContext), LifecycleOwner, ViewPager.OnPageChangeListener,
   SelectedAdapter.OnItemClickListener {
 
@@ -108,14 +107,14 @@ class MediaLibraryPhotoPreview constructor(
 
   private fun showToast() {
     val map = Arguments.createMap().apply { putString(desc, numberLimit()) }
-    navigationEmitter.receiveEvent(id, ON_SHOW_TOAST, map)
+    EventEmitter.receiveEvent(id, ON_SHOW_TOAST, map)
   }
 
   private fun numberLimit(): String =
     context.resources.getString(R.string.number_limit, model?.getSelectLimit())
 
   private fun onNextStep() {
-    navigationEmitter.receiveEvent(id, ON_FINISH_SELECT, null)
+    EventEmitter.receiveEvent(id, ON_FINISH_SELECT, null)
   }
 
   private fun markSelectedState(position: Int) {

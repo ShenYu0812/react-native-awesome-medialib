@@ -5,6 +5,7 @@ import android.content.Context
 import com.facebook.react.*
 import com.facebook.soloader.SoLoader
 import com.project5e.react.navigation.NavigationManager
+import io.project5e.lib.media.MediaLibManager
 import io.project5e.lib.media.MediaLibPackage
 import io.project5e.lib.media.manager.LocalMediaManager
 
@@ -15,9 +16,7 @@ class MainApplication : Application(), ReactApplication {
     }
 
     override fun getPackages(): List<ReactPackage> {
-      val packages: MutableList<ReactPackage> = PackageList(this).packages
-      packages.add(MediaLibPackage(CustomNavigationEmitter))
-      return packages
+      return PackageList(this).packages
     }
 
     override fun getJSMainModuleName(): String {
@@ -33,7 +32,7 @@ class MainApplication : Application(), ReactApplication {
     super.onCreate()
     SoLoader.init(this,  /* native exopackage */false)
     initializeFlipper(this, reactNativeHost.reactInstanceManager) // Remove this line if you don't want Flipper enabled
-    LocalMediaManager.initialization(this@MainApplication)
+    MediaLibManager.install(this@MainApplication, reactNativeHost.reactInstanceManager)
     NavigationManager.install(mReactNativeHost)
     // NavigationManager.TAG = "sy_test_bug"
   }

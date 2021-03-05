@@ -33,7 +33,6 @@ import kotlinx.coroutines.*
 class NativeMediaLibraryView constructor(
   themedReactContext: ThemedReactContext,
   private val reactAppContext: ReactApplicationContext,
-  private val navigationEmitter: EventEmitter
 ) : ConstraintLayout(themedReactContext), LifecycleOwner, GalleryAdapter.OnSelectChangedListener,
   GalleryAdapter.OnPreviewMediaListener, LifecycleEventListener {
   private val tag = NativeMediaLibraryView::class.java.simpleName
@@ -96,7 +95,7 @@ class NativeMediaLibraryView constructor(
         Log.d("find_bugs", "notifyGalleryUpdate: invoke fetchAlbum")
         val bundle = Arguments.createMap()
           .also { it.putArray(newAlbums, model.fetchAlbum(true, add)) }
-        navigationEmitter.receiveEvent(id, ON_ALBUM_UPDATE, bundle)
+        EventEmitter.receiveEvent(id, ON_ALBUM_UPDATE, bundle)
       }
       if (model.getSelectedImageCount() >= model.selectLimit.value ?: 9) showToast(toastNumLimit)
     }
@@ -126,13 +125,13 @@ class NativeMediaLibraryView constructor(
   override fun onPreview(position: Int, haveHeader: Boolean) {
     model ?: return
     if (position == -1 && haveHeader) {
-      navigationEmitter.receiveEvent(id, ON_PUSH_CAMERA, null)
+      EventEmitter.receiveEvent(id, ON_PUSH_CAMERA, null)
       return
     }
     val duration = model.shouldShowList.value?.get(position)?.duration
     if (duration != null && duration < 5000) showToast(toastDurationInvalidate)
     model.previewPosition = position
-    navigationEmitter.receiveEvent(id, ON_PUSH_PREVIEW, null)
+    EventEmitter.receiveEvent(id, ON_PUSH_PREVIEW, null)
   }
 
   override fun onHostResume() {}
@@ -148,7 +147,7 @@ class NativeMediaLibraryView constructor(
   private fun onItemSelected(selectedCount: Int) {
     val dataMap = Arguments.createMap()
     dataMap.putInt(SELECT_MEDIA_COUNT, selectedCount)
-    navigationEmitter.receiveEvent(id, ON_MEDIA_ITEM_SELECT, dataMap)
+    EventEmitter.receiveEvent(id, ON_MEDIA_ITEM_SELECT, dataMap)
   }
 
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -214,7 +213,7 @@ class NativeMediaLibraryView constructor(
       else -> formatInvalidate
     }
     val map = Arguments.createMap().apply { putString(desc, message) }
-    navigationEmitter.receiveEvent(id, ON_SHOW_TOAST, map)
+    EventEmitter.receiveEvent(id, ON_SHOW_TOAST, map)
   }
 
   private fun numberLimit(): String = context.resources

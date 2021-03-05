@@ -1,16 +1,17 @@
 package io.project5e.lib.media.react
 
-import com.facebook.react.bridge.WritableArray
-import com.facebook.react.bridge.WritableMap
+import com.facebook.react.ReactInstanceManager
+import com.facebook.react.bridge.*
+import com.facebook.react.uimanager.events.RCTEventEmitter
 
-interface EventEmitter {
+object EventEmitter {
 
-  fun sendEvent(eventName: String, data: Any?)
+  var reactInstanceManager: ReactInstanceManager? = null
 
-  fun receiveEvent(targetTag: Int, eventName: String, event: WritableMap?)
-
-  fun receiveTouches(eventName: String, touches: WritableArray, changedIndices: WritableArray)
-
-  fun sendNavigationEvent(eventType: String, screenId: String?, data: Any? = null)
+  fun receiveEvent(targetTag: Int, eventName: String, event: WritableMap?) {
+    reactInstanceManager?.currentReactContext
+      ?.getJSModule(RCTEventEmitter::class.java)
+      ?.receiveEvent(targetTag, eventName, event)
+  }
 
 }

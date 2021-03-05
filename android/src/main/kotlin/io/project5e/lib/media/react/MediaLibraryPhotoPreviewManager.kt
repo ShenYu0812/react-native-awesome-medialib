@@ -5,9 +5,7 @@ import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
 import io.project5e.lib.media.view.MediaLibraryPhotoPreview
 
-class MediaLibraryPhotoPreviewManager(
-  private val navigationEmitter: EventEmitter
-) : SimpleViewManager<MediaLibraryPhotoPreview>() {
+class MediaLibraryPhotoPreviewManager : SimpleViewManager<MediaLibraryPhotoPreview>() {
 
   companion object {
     const val MEDIA_LIB_PHOTO_PREVIEW = "MediaLibraryPhotoPreview"
@@ -21,7 +19,7 @@ class MediaLibraryPhotoPreviewManager(
   override fun getName(): String = MEDIA_LIB_PHOTO_PREVIEW
 
   override fun createViewInstance(reactContext: ThemedReactContext): MediaLibraryPhotoPreview =
-    MediaLibraryPhotoPreview(reactContext, navigationEmitter)
+    MediaLibraryPhotoPreview(reactContext)
 
   override fun getExportedCustomBubblingEventTypeConstants(): MutableMap<String, *>? {
     return MapBuilder.builder<String, Any>()
