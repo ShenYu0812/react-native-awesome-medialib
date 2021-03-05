@@ -11,7 +11,7 @@ export const Home = (props: NavigationProps) => {
     const resp = await props.navigator.present(
       'MediaSelectorPage',
       {},
-      {isFullScreen: true, isTransparency: true, animated: true, isTabBarPresented: true}
+      {isFullScreen: true, isTransparency: true, animated: true, isTabBarPresented: false}
     )
     if (!resp) {
       return
@@ -30,7 +30,6 @@ export const Home = (props: NavigationProps) => {
         from: SourceType.main,
       }
     }
-
     props.navigator.present('MediaLibraryPage', params, {
       isFullScreen: true,
       isTabBarPresented: true,

@@ -53,5 +53,11 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+	<string>用于使用摄像头</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>用于存储拍摄的照片和视频</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>用于打开访问相册</string>
 </dict>
 </plist>
