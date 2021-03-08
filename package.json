@@ -1,6 +1,6 @@
 {
   "name": "react-native-awesome-medialib",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A useful media selector module base on native component",
   "main": "lib/commonjs/index.js",
   "types": "lib/typescript/index.d.ts",
@@ -130,5 +130,14 @@
     "react-native-iphone-x-helper": "^1.3.0",
     "react-native-root-toast": "^3.2.0",
     "react-native-video": "^4.4.5"
-  }
+  },
+  "bundledDependencies": [
+    "@types/react-native-video", 
+    "react-native-awesome-navigation", 
+    "react-native-fast-image", 
+    "react-native-gesture-handler", 
+    "react-native-iphone-x-helper", 
+    "react-native-root-toast",
+    "react-native-video"
+  ]
 }
