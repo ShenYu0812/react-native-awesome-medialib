@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.authors      = package["author"]
 
   s.platforms    = { :ios => "11.0" }
-  s.source       = { :git => "https://github.com/Project5E/react-native-awesome-medialib.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://git.dev.moumoux.com/hula/react-native-awesome-medialib.git", :tag => "#{s.version}" }
 
   
   s.source_files = "ios/**/*.{h,m,mm,swift}"

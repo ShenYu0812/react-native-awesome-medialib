@@ -44,6 +44,6 @@
 
 ### 3. Optional: u must choose one between Point.2 and Point.3 to get ==The Results==; 
   This is React-Native Way to get it:
-  see it in [link]:(https://github.com/Project5E/react-native-awesome-medialib/doc/README.md)
+  see it in [link]:(https://git.dev.moumoux.com/hula/react-native-awesome-medialib/doc/README.md)
 
 ## API
