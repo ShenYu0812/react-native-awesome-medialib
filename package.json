@@ -1,6 +1,6 @@
 {
   "name": "react-native-awesome-medialib",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "A useful media selector module base on native component",
   "main": "lib/commonjs/index.js",
   "types": "lib/typescript/index.d.ts",
@@ -55,6 +55,7 @@
   "bugs": {
     "url": "https://git.dev.moumoux.com/hula/react-native-awesome-medialib/issues"
   },
+  "homepage": "https://git.dev.moumoux.com/hula/react-native-awesome-medialib#readme",
   "devDependencies": {
     "@react-native-community/eslint-config": "^2.0.0",
     "@release-it/conventional-changelog": "^2.0.0",
