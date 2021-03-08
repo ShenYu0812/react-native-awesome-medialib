@@ -6,17 +6,21 @@ A useful media selector module base on native component. It will offer a meida s
 
 ```sh
 npm install react-native-awesome-medialib
-```or```
+```
+or
+```sh
 yarn add react-native-awesome-medialib
-
-```u should install react-native-awesome-navigation concurrently.```
-[github link]:(https://github.com/Project5E/react-native-awesome-navigation) 
 ```
 
+u should install react-native-awesome-navigation, react-native-fast-image, react-native-gesture-handler, react-native-iphone-x-helper, react-native-root-toast, 
+@types/react-native-video and react-native-video, concurrently.
+[github link]:(https://github.com/Project5E/react-native-awesome-navigation) 
+
 ## Usage
-### 1. First, ensure `react-native-awesome-medialib`, `react-native-awesome-navigation` have been installed.
+### 1. First, ensure `react-native-awesome-medialib`, all other library have been installed.
 ### 2. Second, use {#Register.registerComponent} make all page had been registed. 
-  u also can use other navigation lib such as `react-navigation`, and register by it. but we recommond use `react-native-awesome-navigation`, because media lib internal page's navigate is used it.
+  u also can use other navigation lib such as `react-navigation`, and register by it. but we recommond use `react-native-awesome-navigation`, 
+  because media lib internal page's navigate is used it.
 
 ```typescript
 // registing.tsx
@@ -67,7 +71,52 @@ return (
   </>
 )
 ```
-### 4. Last, Enjoy it!
+
+### 4. Then, getResult by listening event in ur entrance of medialib, and the event value is type of `Result` from this library.
+```typescript
+  // Ur entrance of medialib
+  useEffect(() => {
+    const subs = rxEventBus.listen(OnNextStepNotification).subscribe(value => {
+      // e.g. push this value to new page do something or other operation
+      props.navigator.push('Your results display page', value)
+    })
+    return () => {
+      subs.unsubscribe()
+    }
+  }, [props])
+```
+
+The type of Result: ur can get a list of choosen images or a video, whitch is include id(android media strore id,), url(above android 10 is 'content:\\...', else absolute path),
+width, height, type, scale and so on.
+```typescript
+  // ResultModel.ts
+  export interface LocalMedia {
+  id?: number
+  url: string
+  width?: number
+  height?: number
+  scale?: number
+  type?: SourceType
+}
+
+export enum InvokeType {
+  main = 'main',
+  editor = 'editor',
+  avatar = 'avatar',
+}
+
+export enum SourceType {
+  image = 'image',
+  video = 'video',
+}
+
+export interface Result {
+  dataList: LocalMedia[]
+  from?: InvokeType
+}
+```
+
+### 5. Last, Enjoy it!
 <br/>
 ## Contributing
 
