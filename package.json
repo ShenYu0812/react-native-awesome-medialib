@@ -47,7 +47,7 @@
   "bugs": {
     "url": "https://git.dev.moumoux.com/hula/react-native-awesome-medialib/issues"
   },
-  "homepage": "https://git.dev.moumoux.com/hula/react-native-awesome-medialib#readme",
+  "homepage": "https://git.dev.moumoux.com/hula/react-native-awesome-medialib/-/tree/master/docs#readme",
   "devDependencies": {
     "@react-native-community/eslint-config": "^2.0.0",
     "@release-it/conventional-changelog": "^2.0.0",
