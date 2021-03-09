@@ -22,13 +22,13 @@ yarn add react-native-awesome-medialib
 react-native link react-native-awesome-media
 ``` 
 ### 2. 手动配置
-手动引入
+<1> 手动引入
 ```kotlin
 // settings.gradle
 include ':react-native-awesome-medialib'
 project(':react-native-awesome-medialib').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-awesome-medialib/android')
 ```
-添加依赖
+<2> 添加依赖
 ```kotlin
 // app/build.gradle
 dependency {
@@ -37,7 +37,7 @@ dependency {
   ...
 }
 ```
-Application中添加ReactPackage
+<3> Application中添加ReactPackage
 ```kotlin
 class MainApplication : Application(), ReactApplication {
     private val mReactNativeHost: ReactNativeHost = object : ReactNativeHost(this) {

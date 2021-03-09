@@ -1,4 +1,4 @@
-# react-native-awesome-medialib
+# Get Started
 
 A useful media selector module base on native component. It will offer a meida selector in batteries-included way, including picture selection, photo shooting, video selection, album switch, preview and so on. We recommend strongly that u should install reac-native-awesome-navigation as navigation component in project when using this lib.
 
@@ -12,9 +12,44 @@ or
 yarn add react-native-awesome-medialib
 ```
 
-u should install react-native-awesome-navigation, react-native-fast-image, react-native-gesture-handler, react-native-iphone-x-helper, react-native-root-toast, 
-@types/react-native-video and react-native-video, concurrently.
-[github link]:(https://github.com/Project5E/react-native-awesome-navigation) 
+u should install react-native-awesome-navigation[github link]:(https://github.com/Project5E/react-native-awesome-navigation),<br/> 
+react-native-fast-image, react-native-gesture-handler, react-native-iphone-x-helper, react-native-root-toast, @types/react-native-video and react-native-video, concurrently.<br/>
+
+when `react-native` < 0.59.0, u should link library or maunully config.
+### 1. link
+```sh
+react-native link react-native-awesome-media
+``` 
+### 2. maunully config
+#### <1> include:
+```kotlin
+// settings.gradle
+include ':react-native-awesome-medialib'
+project(':react-native-awesome-medialib').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-awesome-medialib/android')
+```
+#### <2> dependencies:
+```kotlin
+// app/build.gradle
+dependency {
+  ...
+  implementation project(':react-native-awesome-medialib')
+  ...
+}
+```
+#### <3> add ReactPackage in Application:
+```kotlin
+class MainApplication : Application(), ReactApplication {
+    private val mReactNativeHost: ReactNativeHost = object : ReactNativeHost(this) {
+        ...
+
+        override fun getPackages(): List<ReactPackage> {
+            val packages: MutableList<ReactPackage> = PackageList(this).packages
+            packages.add(MediaLibPackage())
+            return packages
+        }
+        ...
+```
+<br/>
 
 ## Usage
 ### 1. First, ensure `react-native-awesome-medialib`, all other library have been installed.
@@ -72,7 +107,7 @@ return (
 )
 ```
 
-### 4. Then, getResult by listening event in ur entrance of medialib, and the event value is type of `Result` from this library.
+### 4. Then, get result by listening event in ur entrance of medialib, and the event value is type of `Result` from this library.
 ```typescript
   // Ur entrance of medialib
   useEffect(() => {
@@ -86,7 +121,7 @@ return (
   }, [props])
 ```
 
-The type of Result: ur can get a list of choosen images or a video, whitch is include id(android media strore id,), url(above android 10 is 'content:\\...', else absolute path),
+The type of result: ur can get a list of choosen images or a video, whitch is include id(android media strore id,), url(above android 10 is 'content:\\\\...', else absolute path),
 width, height, type, scale and so on.
 ```typescript
   // ResultModel.ts
